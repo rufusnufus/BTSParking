@@ -1,0 +1,240 @@
+openapi: '3.0.2'
+info:
+  title: BTS.Parking Client Interface API
+  version: '1.0.0'
+
+paths:
+  /request-login-link:
+    post:
+      summary: Generate a one-time link that will log a user in with their e-mail.
+      tags:
+        - Authorization
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthData'
+      responses:
+        '204':
+          description: A login link is sent to the e-mail successfully.
+        '400':
+          description: The provided e-mail is invalid.
+
+  /activate-login-link/{login_code}:
+    get:
+      summary: Catch the user following a login link and perform authorization.
+      tags:
+        - Authorization
+      responses:
+        '204':
+          description: Authorization successful.
+          headers:
+            Set-Cookie:
+              description: Authorization token.
+              schema:
+                type: string
+                example: AUTH_TOKEN=<token-value>; Path=/; HttpOnly
+        '404':
+          description: The link doesn't exist or isn't valid anymore.
+
+  /logout:
+    post:
+      summary: Terminate a user's session.
+      tags:
+        - Authorization
+      responses:
+        '204':
+          description: Session terminated successfully.
+          headers:
+            Set-Cookie:
+              description: Null token to replace any existing one.
+              schema:
+                type: string
+                example: AUTH_TOKEN=None; Path=/; HttpOnly; Expires=Thu, 01 Jan 1970 00:00:00 GMT
+
+  /zones/{zone_id}/free-spaces:
+    get:
+      summary: List the spaces that are available for parking.
+      tags:
+        - Booking
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: A listing of available parking spaces is obtained successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FreeSpaces'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /zones/{zone_id}/book:
+    post:
+      summary: Book a parking space.
+      tags:
+        - Booking
+      security:
+        - cookieAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                space_id:
+                  type: integer
+                car_id:
+                  type: integer
+              required:
+                - space_id
+                - car_id
+      responses:
+        '204':
+          description: Space booked successfully.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /zones/{zone_id}/release:
+    post:
+      summary: Stop occupying a parking space.
+      tags:
+        - Booking
+      security:
+        - cookieAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                space_id:
+                  type: integer
+              required:
+                - space_id
+      responses:
+        '204':
+          description: Parking space released successfully.
+        '400':
+          description: This place isn't booked by this user.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /cars:
+    get:
+      summary: List the saved cars.
+      tags:
+        - Car Management
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Listing of all added cars of a user.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Car'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      summary: Create a new car.
+      tags:
+        - Car Management
+      security:
+        - cookieAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Car'
+            example:
+              model: Volkswagen Touareg
+              license_number: A000AA
+      responses:
+        '200':
+          description: Car created successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    $ref: '#/components/schemas/Car'
+                required:
+                  - id
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /cars/{car_id}:
+    delete:
+      summary: Delete a saved car.
+      tags:
+        - Car Management
+      security:
+        - cookieAuth: []
+      responses:
+        '204':
+          description: Car deleted successfully.
+        '403':
+          description: This car isn't owned by this user.
+        '404':
+          description: This car doesn't exist.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+components:
+  responses:
+    Unauthorized:
+      description: The request is not authorized.
+
+  schemas:
+    AuthData:
+      type: object
+      properties:
+        email:
+          type: string
+      required:
+        - email
+      example:
+        email: "user@example.com"
+
+    FreeSpaces:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: integer
+        required:
+          - id
+      example:
+        - id: 1
+        - id: 2
+
+    Car:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        model:
+          type: string
+        license_number:
+          type: string
+      required:
+        - id
+        - model
+        - license_number
+      example:
+        id: 1
+        model: Volkswagen Touareg
+        license_number: A000AA
+
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: AUTH_TOKEN
