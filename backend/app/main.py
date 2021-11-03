@@ -17,15 +17,15 @@ async def get_cars():
     cars = await ModelCar.get_all()
     return cars
 
-@app.delete("/cars/{carID}", status_code = status.HTTP_204_NO_CONTENT)
-async def delete_car(carID: int):
-    car_id = await ModelCar.delete(carID)
-    assert car_id == carID
+@app.delete("/cars/{car_id}", status_code = status.HTTP_204_NO_CONTENT)
+async def delete_car(car_id: int):
+    deleted_car_id = await ModelCar.delete(car_id)
+    assert deleted_car_id == car_id
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
-@app.get("/cars/{carID}", response_model=OutputCar)
-async def get_car(carID: int):
-    car = await ModelCar.get(carID)
+@app.get("/cars/{car_id}", response_model=OutputCar)
+async def get_car(car_id: int):
+    car = await ModelCar.get(car_id)
     return OutputCar(**car).dict()
 
 if __name__ == "__main__":
