@@ -7,6 +7,7 @@ cars = Table(
     "cars",
     metadata,
     Column("id", Integer, primary_key=True),
+    Column("email", String),
     Column("model", String, nullable=False),
     Column("license_number", String, nullable=False),
 )
@@ -78,22 +79,21 @@ class User:
     @classmethod
     async def check_cookie(cls, cookie):
         query = users.select().where(users.c.cookie == cookie)
-        set = await db.fetch_one(query)
-        print(set)
-        return True if set else False
+        email = await db.execute(query)
+        return email
 
 
 
 class Car:
     @classmethod
-    async def get(cls, id):
-        query = cars.select().where(cars.c.id == id)
+    async def get(cls, id, email):
+        query = cars.select().where(and_(cars.c.id == id, cars.c.email == email))
         car = await db.fetch_one(query)
         return car
     
     @classmethod
-    async def get_all(cls):
-        query = cars.select()
+    async def get_all(cls, email):
+        query = cars.select().where(cars.c.email == email)
         user_cars = await db.fetch_all(query)
         return user_cars
 
@@ -104,7 +104,7 @@ class Car:
         return car_id
     
     @classmethod
-    async def delete(cls, id):
-        query = cars.delete().where(cars.c.id == id)
-        await db.execute(query)
-        return id
+    async def delete(cls, id, email):
+        query = cars.delete().where(and_(cars.c.id == id, cars.c.email == email))
+        car_id = await db.execute(query)
+        return car_id
