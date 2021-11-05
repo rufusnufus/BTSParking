@@ -17,5 +17,3 @@ class OutputCar(BaseModel):
     id: int
     model: str
     license_number: str
-
-
