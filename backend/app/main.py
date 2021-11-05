@@ -7,8 +7,6 @@ from app.schema import InputCar, OutputCar, User
 from app.app import app
 from fastapi import status, Response, Cookie
 from dotenv import load_dotenv
-from app.db import db
-from twilio.twiml.messaging_response import MessagingResponse
 import sendgrid
 from sendgrid.helpers.mail import *
 from hashlib import sha256
@@ -29,12 +27,12 @@ async def send_magic_link(user: User):
     link_create_time = time.time()
     link_expire_time = time.time() + 60*5
     user_data = f"{user.dict()['email']}{link_create_time}"
-    magicID = sha256(user_data.encode('utf-8')).hexdigest()
-    magic_link = f"http://127.0.0.1:80/apply/{magicID}"
+    login_code = sha256(user_data.encode('utf-8')).hexdigest()
+    magic_link = f"http://127.0.0.1:80/apply/{login_code}"
 
     updated_user = await ModelUser.set_magic_link(
         user.dict()['email'], 
-        magicID,
+        login_code,
         link_expire_time
     )
     # TODO: uncomment when frontend will be integrated with backend
@@ -50,9 +48,9 @@ async def send_magic_link(user: User):
     # print(response.headers)
     return magic_link
 
-@app.post("/activate-magic-link/{magicID}")
-async def send_magic_link(magicID: str):
-    email = await ModelUser.validate_magic_link(magicID)
+@app.post("/activate-magic-link/{login_code}")
+async def send_magic_link(login_code: str):
+    email = await ModelUser.validate_magic_link(login_code)
     if email:
         await ModelUser.delete_magic_link(email)
         cookie = f"{email}{time.time()}"

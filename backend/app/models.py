@@ -1,7 +1,6 @@
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, Float, Table, text, and_
+from sqlalchemy import Column, Integer, String, Float, Table, and_
 import time
-from app.db import db, metadata, sqlalchemy
+from app.db import db, metadata
 
 cars = Table(
     "cars",
