@@ -1,9 +1,15 @@
 openapi: '3.0.2'
 info:
   title: BTS.Parking Client Interface API
-  version: '1.0.0'
+  version: '1.1.0'
+
+servers:
+  - url: http://localhost:8000/api/v1
+    description: Local API server for development.
 
 paths:
+  # Authorization
+
   /request-login-link:
     post:
       summary: Generate a one-time link that will log a user in with their e-mail.
@@ -13,18 +19,44 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AuthData'
+              $ref: '#/components/schemas/User'
+            example:
+              email: "user@example.com"
       responses:
         '204':
           description: A login link is sent to the e-mail successfully.
         '400':
           description: The provided e-mail is invalid.
 
-  /activate-login-link/{login_code}:
-    get:
-      summary: Catch the user following a login link and perform authorization.
+  /get-login-code:
+    post:
+      summary: Temporary endpoint to bypass e-mail and just get a login code.
       tags:
         - Authorization
+      responses:
+        '200':
+          description: A login code is returned successfully.
+          content:
+            application/json:
+              schema:
+                type: string
+              example: 2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824
+
+  /activate-login-link:
+    post:
+      summary: Perform authorization by a given one-time login code.
+      tags:
+        - Authorization
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                login_code:
+                  type: string
+              required:
+                - login_code
       responses:
         '204':
           description: Authorization successful.
@@ -36,6 +68,23 @@ paths:
                 example: AUTH_TOKEN=<token-value>; Path=/; HttpOnly
         '404':
           description: The link doesn't exist or isn't valid anymore.
+
+  /me:
+    get:
+      summary: Return the information about the currently logged in user.
+      tags:
+        - Authorization
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: User information returned successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
 
   /logout:
     post:
@@ -52,13 +101,34 @@ paths:
                 type: string
                 example: AUTH_TOKEN=None; Path=/; HttpOnly; Expires=Thu, 01 Jan 1970 00:00:00 GMT
 
+  # Booking
+
+  /zones/{zone_id}/spaces:
+    get:
+      summary: List all the spaces in the zone along with the current occupying vehicles.
+      tags:
+        - Booking
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: A listing of parking spaces is obtained successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Spaces'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: A non-admin user attempted to access this endpoint.
+        '404':
+          $ref: '#/components/responses/ZoneDoesNotExist'
+
   /zones/{zone_id}/free-spaces:
     get:
       summary: List the spaces that are available for parking.
       tags:
         - Booking
-      security:
-        - cookieAuth: []
       responses:
         '200':
           description: A listing of available parking spaces is obtained successfully.
@@ -66,8 +136,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FreeSpaces'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/ZoneDoesNotExist'
 
   /zones/{zone_id}/book:
     post:
@@ -94,6 +164,8 @@ paths:
           description: Space booked successfully.
         '401':
           $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/ZoneDoesNotExist'
 
   /zones/{zone_id}/release:
     post:
@@ -116,9 +188,15 @@ paths:
         '204':
           description: Parking space released successfully.
         '400':
-          description: This place isn't booked by this user.
+          description: This place isn't booked.
         '401':
           $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: This place is booked by another user.
+        '404':
+          $ref: '#/components/responses/ZoneDoesNotExist'
+
+  # Car Management
 
   /cars:
     get:
@@ -178,28 +256,34 @@ paths:
       responses:
         '204':
           description: Car deleted successfully.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '403':
           description: This car isn't owned by this user.
         '404':
           description: This car doesn't exist.
-        '401':
-          $ref: '#/components/responses/Unauthorized'
 
 components:
   responses:
     Unauthorized:
       description: The request is not authorized.
+    ZoneDoesNotExist:
+      description: This zone doesn't exist.
 
   schemas:
-    AuthData:
+    User:
       type: object
       properties:
         email:
           type: string
+        is_admin:
+          type: boolean
+          readOnly: true
       required:
         - email
       example:
         email: "user@example.com"
+        is_admin: false
 
     FreeSpaces:
       type: array
@@ -212,6 +296,22 @@ components:
           - id
       example:
         - id: 1
+        - id: 2
+
+    Spaces:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: integer
+          occupying_car_id:
+            type: integer
+        required:
+          - id
+      example:
+        - id: 1
+          occupying_car_id: 15
         - id: 2
 
     Car:
