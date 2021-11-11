@@ -1,15 +1,8 @@
-from sqlalchemy import Column, Integer, String, Float, Boolean, Table, and_
+from sqlalchemy import Column, String, Integer, Float, Boolean, Table, select, and_
 import time
-from app.db import db, metadata
 
-cars = Table(
-    "cars",
-    metadata,
-    Column("id", Integer, primary_key=True),
-    Column("email", String),
-    Column("model", String, nullable=False),
-    Column("license_number", String, nullable=False)
-)
+from sqlalchemy.sql.functions import user
+from app.db import db, metadata
 
 users = Table(
     "users",
@@ -17,23 +10,23 @@ users = Table(
     Column("email", String, primary_key=True),
     Column("token", String),
     Column("token_expire_time", Float),
-    Column("cookie", String)
-)
-
-spaces = Table(
-    "spaces",
-    metadata,
-    Column("id", Integer, primary_key=True),
-    Column("zone_id", Integer, nullable=False),
-    Column("number", Integer, nullable=False),
-    Column("start_x", Integer, nullable=False),
-    Column("start_y", Integer, nullable=False),
-    Column("end_x", Integer, nullable=False),
-    Column("end_y", Integer, nullable=False),
-    Column("car_id", Integer)
+    Column("cookie", String),
+    Column("is_admin", Boolean, default=False, nullable=False)
 )
 
 class User: 
+    @classmethod
+    async def get_info(cls, email):
+        query = select(users.c.email, users.c.is_admin).where(users.c.email == email)
+        user = await db.fetch_one(query)
+        return user
+    
+    @classmethod
+    async def is_admin(cls, email):
+        query = users.select(users.c.is_admin).where(and_(users.c.email == email, users.c.is_admin == True))
+        is_admin = await db.fetch_one(query)
+        return is_admin
+
     @classmethod
     async def create(cls, **user):
         query = users.insert().values(**user)
@@ -100,6 +93,19 @@ class User:
         email = await db.execute(query)
         return email
 
+spaces = Table(
+    "spaces",
+    metadata,
+    Column("id", Integer, primary_key=True),
+    Column("zone_id", Integer, nullable=False),
+    Column("number", Integer, nullable=False),
+    Column("start_x", Integer, nullable=False),
+    Column("start_y", Integer, nullable=False),
+    Column("end_x", Integer, nullable=False),
+    Column("end_y", Integer, nullable=False),
+    Column("car_id", Integer)
+)
+
 
 class Space: 
     @classmethod
@@ -107,6 +113,12 @@ class Space:
         query = spaces.select().where(and_(spaces.c.zone_id == zone_id, spaces.c.car_id == None))
         free_spaces = await db.fetch_all(query)
         return free_spaces
+
+    @classmethod
+    async def get_spaces(cls, zone_id):
+        query = spaces.select().where(and_(spaces.c.zone_id == zone_id))
+        all_spaces = await db.fetch_all(query)
+        return all_spaces
 
     @classmethod
     async def get_space(cls, id, zone_id):
@@ -139,12 +151,24 @@ class Space:
         query = spaces.select().where(and_(spaces.c.id == id, spaces.c.zone_id == zone_id, spaces.c.car_id == None))
         released_space = await db.fetch_one(query)
         return released_space
-    
+
+
+cars = Table(
+    "cars",
+    metadata,
+    Column("id", Integer, primary_key=True),
+    Column("email", String),
+    Column("model", String, nullable=False),
+    Column("license_number", String, nullable=False)
+)
 
 class Car:
     @classmethod
-    async def get(cls, id, email):
-        query = cars.select().where(and_(cars.c.id == id, cars.c.email == email))
+    async def get(cls, id, email=None):
+        if email:
+            query = cars.select().where(and_(cars.c.id == id, cars.c.email == email))
+        else: 
+            query = cars.select().where(cars.c.id == id)
         car = await db.fetch_one(query)
         return car
     
