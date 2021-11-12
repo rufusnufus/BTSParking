@@ -33,6 +33,13 @@ paths:
       summary: Temporary endpoint to bypass e-mail and just get a login code.
       tags:
         - Authorization
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+            example:
+              email: "user@example.com"
       responses:
         '200':
           description: A login code is returned successfully.
@@ -41,6 +48,8 @@ paths:
               schema:
                 type: string
               example: 2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824
+        '400':
+          description: The provided e-mail is invalid.
 
   /activate-login-link:
     post:
