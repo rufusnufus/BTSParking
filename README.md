@@ -9,6 +9,12 @@
 [![GitHub license](https://img.shields.io/badge/license-mit-orange.svg?style=for-the-badge)](https://github.com/rufusnufus/btsparking/blob/main/LICENSE)
 [![GitHub contributors](https://img.shields.io/github/contributors/rufusnufus/btsparking?style=for-the-badge)](https://github.com/rufusnufus/btsparking/graphs/contributors)
 
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=rufusnufus_BTSParking&metric=alert_status)](https://sonarcloud.io/dashboard?id=rufusnufus_BTSParking)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=rufusnufus_BTSParking&metric=vulnerabilities)](https://sonarcloud.io/dashboard?id=rufusnufus_BTSParking)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=rufusnufus_BTSParking&metric=bugs)](https://sonarcloud.io/dashboard?id=rufusnufus_BTSParking)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=rufusnufus_BTSParking&metric=code_smells)](https://sonarcloud.io/dashboard?id=rufusnufus_BTSParking)
+<br>
+
 ## Overview
 A web application with ability to reserve parking spaces and get parking usage statistics.
 
