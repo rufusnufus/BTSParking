@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "bts-parking-backend"
+version = "0.1.0"
+description = "Backend for BTSParking service"
+authors = ["Rufina Talalaeva <r.talalaeva@innopolis.university>"]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+fastapi = "^0.70.0"
+FastAPI-SQLAlchemy = "^0.2.1"
+psycopg2-binary = "^2.9.2"
+asyncpg = "^0.24.0"
+databases = {extras = ["postgresql"], version = "^0.5.3"}
+uvicorn = "^0.15.0"
+python-dotenv = "^0.19.2"
+twilio = "^7.3.0"
+httpx = "^0.20.0"
+python-multipart = "^0.0.5"
+sendgrid = "^6.9.0"
+
+[tool.poetry.dev-dependencies]
+flake8 = "^4.0.1"
+black = "^21.10b0"
+pydantic = "^1.8.2"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
