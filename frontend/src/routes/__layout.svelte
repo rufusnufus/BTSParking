@@ -1,21 +1,12 @@
-<script lang="ts" context="module">
-  import type { Load } from '@sveltejs/kit';
-
-  export const load: Load = async ({ session }) => {
-    return {
-      props: {
-        authenticated: session.authenticated,
-      }
-    };
-  }
-</script>
-
 <script lang="ts">
-  import Nav from '$lib/nav.svelte';
-  import '../app.css';
+  import { headerAction } from '$lib/processes/auth';
+  import { Header } from '$lib/widgets/header';
 
-  export let authenticated: boolean;
+  import '$lib/app/global.css';
 </script>
 
-<Nav {authenticated} />
+<Header>
+  <svelte:component slot="action" this={$headerAction} />
+</Header>
+
 <slot />

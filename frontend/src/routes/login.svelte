@@ -1,7 +1,11 @@
-<script lang="ts">
-  import LoginForm from '../features/login';
+<script lang="ts" context="module">
+  import { interceptLoginCode } from '$lib/pages/login';
+
+  export const load = interceptLoginCode;
 </script>
 
-<main class="flex items-center content-center">
-  <LoginForm />
-</main>
+<script lang="ts">
+  import { LoginPage } from '$lib/pages/login';
+</script>
+
+<LoginPage />
