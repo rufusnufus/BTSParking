@@ -3,13 +3,14 @@ import os
 from fastapi import status, HTTPException, Response, Cookie
 from dotenv import load_dotenv
 import sendgrid
-from sendgrid.helpers.mail import *
+from sendgrid.helpers.mail import Content, Email, Mail, To
 from hashlib import sha256
 import time
 import requests
 from fastapi import APIRouter, HTTPException, status
 from ..models import User as ModelUser
 from ..schema import User
+from ..exceptions import EXCEPTION_401
 
 router = APIRouter(
     prefix="",
@@ -44,7 +45,7 @@ async def send_login_link(user: User):
     login_code = sha256(user_data.encode('utf-8')).hexdigest()
     magic_link = f"http://127.0.0.1:80/login?code={login_code}"
 
-    updated_user = await ModelUser.set_magic_link(
+    await ModelUser.set_magic_link(
         email, 
         login_code,
         link_expire_time
@@ -56,21 +57,14 @@ async def send_login_link(user: User):
     content = Content("text/html", f"<html><head></head><body>Hello! Click <a href=\"{magic_link}\">the following link</a> to login to BTSParking service.</body></html>")
     mail = Mail(from_email, to_email, subject, content)
     response = sg.client.mail.send.post(request_body=mail.get())
-    # print(response.status_code)
-    # print(response.body)
-    # print(response.headers)
-    return Response(status_code=status.HTTP_204_NO_CONTENT)
+    
+    if response.status_code == 202:
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
+    else:
+        return Response(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @router.post("/get-login-code", summary="Temporary endpoint to bypass e-mail and just get a login code")
 async def get_login_code(user: User):
-    # response = requests.get(
-    # os.environ.get('REAL_EMAIL_API_LINK'),
-    # params = {'email': user.dict()['email']},
-    # headers = {'Authorization': "Bearer " + os.environ.get('REAL_EMAIL_API_KEY') })
-    # response_status = response.json()['status']
-    # if response_status == "invalid":
-    #     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="The provided e-mail is invalid.")
-    
     user_exists = await ModelUser.get(**user.dict())
 
     if not user_exists:
@@ -81,7 +75,7 @@ async def get_login_code(user: User):
     user_data = f"{user.dict()['email']}{link_create_time}"
     login_code = sha256(user_data.encode('utf-8')).hexdigest()
 
-    updated_user = await ModelUser.set_magic_link(
+    await ModelUser.set_magic_link(
         user.dict()['email'], 
         login_code,
         link_expire_time
@@ -96,7 +90,7 @@ async def activate_login_link(login_code: str):
         cookie = f"{email}{time.time()}"
         cookie = sha256(cookie.encode('utf-8')).hexdigest()
         try: 
-            set_cookie = await ModelUser.set_cookie(email, cookie)
+            await ModelUser.set_cookie(email, cookie)
             response = Response(status_code=status.HTTP_204_NO_CONTENT)
             response.set_cookie(
                 "AUTH_TOKEN",
@@ -118,7 +112,7 @@ async def get_user_info(AUTH_TOKEN: Optional[str] = Cookie(None)):
     valid_email = await ModelUser.check_cookie(AUTH_TOKEN)
     if not valid_email:
         # user is not authorized
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="The request is not authorized.")
+        raise EXCEPTION_401
     user = await ModelUser.get_info(valid_email)
     return user
 
@@ -128,7 +122,7 @@ async def logout(AUTH_TOKEN: Optional[str] = Cookie(None)):
     valid_email = await ModelUser.check_cookie(AUTH_TOKEN)
     if not valid_email:
         # user is not authorized
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="No authorization cookie is provided")
+        raise EXCEPTION_401
     
     await ModelUser.delete_cookie(AUTH_TOKEN)
     response = Response(status_code=status.HTTP_204_NO_CONTENT)
@@ -137,6 +131,6 @@ async def logout(AUTH_TOKEN: Optional[str] = Cookie(None)):
 
 # @router.delete("/user", status_code = status.HTTP_204_NO_CONTENT)
 async def delete_user(user: User):
-    deleted_user = await ModelUser.delete(**user.dict())
+    await ModelUser.delete(**user.dict())
     return Response(status_code=status.HTTP_204_NO_CONTENT) 
 

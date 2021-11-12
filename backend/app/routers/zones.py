@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException, status, Response, Cookie
 from fastapi.encoders import jsonable_encoder
 from typing import Optional
 from ..models import Car as ModelCar, User as ModelUser, Space
+from ..exceptions import EXCEPTION_401
 
 
 router = APIRouter(
@@ -48,7 +49,7 @@ async def get_free_spaces(zone_id: int, AUTH_TOKEN: Optional[str] = Cookie(None)
     valid_email = await ModelUser.check_cookie(AUTH_TOKEN)
     if not valid_email: 
         # user is not authorized
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="No authorization cookie is provided")
+        raise EXCEPTION_401
     
     free_spaces = await Space.get_free_spaces(zone_id)
     json_free_spaces=[]
@@ -75,7 +76,7 @@ async def book_space(zone_id: int, space_id: int, car_id: int, AUTH_TOKEN: Optio
     valid_email = await ModelUser.check_cookie(AUTH_TOKEN)
     if not valid_email: 
         # user is not authorized
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="No authorization cookie is provided")
+        raise EXCEPTION_401
     
     free_space = await Space.check_free_space(space_id, zone_id)
     if not free_space:
@@ -93,7 +94,7 @@ async def book_space(zone_id: int, space_id: int, AUTH_TOKEN: Optional[str] = Co
     valid_email = await ModelUser.check_cookie(AUTH_TOKEN)
     if not valid_email: 
         # user is not authorized
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="No authorization cookie is provided")
+        raise EXCEPTION_401
     
     free_space = await Space.check_free_space(space_id, zone_id)
     if free_space:
