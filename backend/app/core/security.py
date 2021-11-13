@@ -9,7 +9,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 load_dotenv(os.path.join(BASE_DIR, "../.env"))
 
 
-def create_access_code(email: str) -> str:
+def create_access_code(email: str) -> tuple:
     link_create_time = time.time()
     link_expire_time = time.time() + 60 * 5
     user_data = f"{email}{link_create_time}"
