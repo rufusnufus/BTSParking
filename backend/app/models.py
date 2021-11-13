@@ -1,7 +1,8 @@
-from sqlalchemy import Column, String, Integer, Float, Boolean, Table, select, and_
 import time
 
-from sqlalchemy.sql.functions import user
+from sqlalchemy import (Boolean, Column, Float, Integer, String, Table, and_,
+                        select)
+
 from app.db import db, metadata
 
 users = Table(
@@ -11,19 +12,22 @@ users = Table(
     Column("token", String),
     Column("token_expire_time", Float),
     Column("cookie", String),
-    Column("is_admin", Boolean, default=False, nullable=False)
+    Column("is_admin", Boolean, default=False, nullable=False),
 )
 
-class User: 
+
+class User:
     @classmethod
     async def get_info(cls, email):
         query = select(users.c.email, users.c.is_admin).where(users.c.email == email)
         user = await db.fetch_one(query)
         return user
-    
+
     @classmethod
     async def is_admin(cls, email):
-        query = users.select(users.c.is_admin).where(and_(users.c.email == email, users.c.is_admin == True))
+        query = users.select(users.c.is_admin).where(
+            and_(users.c.email == email, users.c.is_admin == True)
+        )
         is_admin = await db.fetch_one(query)
         return is_admin
 
@@ -32,7 +36,7 @@ class User:
         query = users.insert().values(**user)
         user_id = await db.execute(query)
         return user_id
-    
+
     @classmethod
     async def get(cls, email):
         query = users.select().where(users.c.email == email)
@@ -47,9 +51,10 @@ class User:
 
     @classmethod
     async def set_magic_link(cls, email, token, token_expire_time):
-        query = users.update().where(users.c.email == email).values(
-            token=token,  
-            token_expire_time=token_expire_time
+        query = (
+            users.update()
+            .where(users.c.email == email)
+            .values(token=token, token_expire_time=token_expire_time)
         )
         user = await db.execute(query)
         return user
@@ -58,40 +63,46 @@ class User:
     async def validate_magic_link(cls, token):
         query = users.select().where(users.c.token == token)
         user = await db.fetch_one(query)
-        
+
         if user:
-            if time.time() < dict(user)['token_expire_time']: 
-                return dict(user)['email']
+            if time.time() < dict(user)["token_expire_time"]:
+                return dict(user)["email"]
         return None
 
     @classmethod
     async def delete_magic_link(cls, email):
-        query = users.update().where(users.c.email == email).values(
-            token=None, 
-            token_expire_time=None
-        )
-        user = await db.execute(query)
-        return user 
-
-    @classmethod
-    async def set_cookie(cls, email, cookie):
-        query = users.update().where(users.c.email == email).values(
-            cookie=cookie,  
+        query = (
+            users.update()
+            .where(users.c.email == email)
+            .values(token=None, token_expire_time=None)
         )
         user = await db.execute(query)
         return user
-    
+
+    @classmethod
+    async def set_cookie(cls, email, cookie):
+        query = (
+            users.update()
+            .where(users.c.email == email)
+            .values(
+                cookie=cookie,
+            )
+        )
+        user = await db.execute(query)
+        return user
+
     @classmethod
     async def check_cookie(cls, cookie):
         query = users.select().where(users.c.cookie == cookie)
         email = await db.execute(query)
         return email
-    
+
     @classmethod
     async def delete_cookie(cls, cookie):
         query = users.delete().where(users.c.cookie == cookie)
         email = await db.execute(query)
         return email
+
 
 spaces = Table(
     "spaces",
@@ -103,14 +114,16 @@ spaces = Table(
     Column("start_y", Integer, nullable=False),
     Column("end_x", Integer, nullable=False),
     Column("end_y", Integer, nullable=False),
-    Column("car_id", Integer)
+    Column("car_id", Integer),
 )
 
 
-class Space: 
+class Space:
     @classmethod
     async def get_free_spaces(cls, zone_id):
-        query = spaces.select().where(and_(spaces.c.zone_id == zone_id, spaces.c.car_id == None))
+        query = spaces.select().where(
+            and_(spaces.c.zone_id == zone_id, spaces.c.car_id == None)
+        )
         free_spaces = await db.fetch_all(query)
         return free_spaces
 
@@ -122,33 +135,57 @@ class Space:
 
     @classmethod
     async def get_space(cls, id, zone_id):
-        query = spaces.select().where(and_(spaces.c.id == id, spaces.c.zone_id == zone_id))
+        query = spaces.select().where(
+            and_(spaces.c.id == id, spaces.c.zone_id == zone_id)
+        )
         space = await db.fetch_one(query)
         return space
 
     @classmethod
     async def check_free_space(cls, id, zone_id):
-        query = spaces.select().where(and_(spaces.c.id == id, spaces.c.zone_id == zone_id, spaces.c.car_id == None))
+        query = spaces.select().where(
+            and_(
+                spaces.c.id == id, spaces.c.zone_id == zone_id, spaces.c.car_id == None
+            )
+        )
         free_space = await db.fetch_one(query)
         return True if free_space else False
 
     @classmethod
     async def book_space(cls, id, zone_id, car_id):
-        query = spaces.update().where(and_(spaces.c.id == id, spaces.c.zone_id == zone_id)).values(
-            car_id=car_id,  
+        query = (
+            spaces.update()
+            .where(and_(spaces.c.id == id, spaces.c.zone_id == zone_id))
+            .values(
+                car_id=car_id,
+            )
         )
         await db.execute(query)
-        query = spaces.select().where(and_(spaces.c.id == id, spaces.c.zone_id == zone_id, spaces.c.car_id == car_id))
+        query = spaces.select().where(
+            and_(
+                spaces.c.id == id,
+                spaces.c.zone_id == zone_id,
+                spaces.c.car_id == car_id,
+            )
+        )
         booked_space = await db.fetch_one(query)
         return booked_space
 
     @classmethod
     async def release_space(cls, id, zone_id):
-        query = spaces.update().where(and_(spaces.c.id == id, spaces.c.zone_id == zone_id)).values(
-            car_id=None,  
+        query = (
+            spaces.update()
+            .where(and_(spaces.c.id == id, spaces.c.zone_id == zone_id))
+            .values(
+                car_id=None,
+            )
         )
         await db.execute(query)
-        query = spaces.select().where(and_(spaces.c.id == id, spaces.c.zone_id == zone_id, spaces.c.car_id == None))
+        query = spaces.select().where(
+            and_(
+                spaces.c.id == id, spaces.c.zone_id == zone_id, spaces.c.car_id == None
+            )
+        )
         released_space = await db.fetch_one(query)
         return released_space
 
@@ -159,19 +196,20 @@ cars = Table(
     Column("id", Integer, primary_key=True),
     Column("email", String),
     Column("model", String, nullable=False),
-    Column("license_number", String, nullable=False)
+    Column("license_number", String, nullable=False),
 )
+
 
 class Car:
     @classmethod
     async def get(cls, id, email=None):
         if email:
             query = cars.select().where(and_(cars.c.id == id, cars.c.email == email))
-        else: 
+        else:
             query = cars.select().where(cars.c.id == id)
         car = await db.fetch_one(query)
         return car
-    
+
     @classmethod
     async def get_all(cls, email):
         query = cars.select().where(cars.c.email == email)
@@ -185,7 +223,7 @@ class Car:
         query = cars.select().where(cars.c.id == car_id)
         created_car = await db.fetch_one(query)
         return created_car
-    
+
     @classmethod
     async def delete(cls, id, email):
         query = cars.delete().where(and_(cars.c.id == id, cars.c.email == email))

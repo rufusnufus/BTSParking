@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
 from .db import db
 from .routers import api
 
@@ -26,6 +27,7 @@ app.include_router(api.router)
 @app.on_event("startup")
 async def startup():
     await db.connect()
+
 
 @app.on_event("shutdown")
 async def shutdown():

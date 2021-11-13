@@ -1,10 +1,12 @@
 from pydantic import BaseModel
 
-class User(BaseModel): 
+
+class User(BaseModel):
     email: str
 
     class Config:
         orm_mode = True
+
 
 class InputCar(BaseModel):
     model: str
@@ -12,6 +14,7 @@ class InputCar(BaseModel):
 
     class Config:
         orm_mode = True
+
 
 class OutputCar(BaseModel):
     id: int

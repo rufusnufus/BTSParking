@@ -8,11 +8,15 @@ create_car_responses = {
                 "examples": {
                     "touareg": {
                         "summary": "Volkswagen Touareg",
-                        "value": {"id": 1, "model": "Volkswagen Touareg", "license_number": "A000AA"}
+                        "value": {
+                            "id": 1,
+                            "model": "Volkswagen Touareg",
+                            "license_number": "A000AA",
+                        },
                     },
                 }
             }
-        }
+        },
     },
 }
 
@@ -24,11 +28,17 @@ get_cars_responses = {
                 "examples": {
                     "cars": {
                         "summary": "cars",
-                        "value": [{"id": 1, "model": "Volkswagen Touareg", "license_number": "A000AA"}]
+                        "value": [
+                            {
+                                "id": 1,
+                                "model": "Volkswagen Touareg",
+                                "license_number": "A000AA",
+                            }
+                        ],
                     },
                 }
             }
-        }
+        },
     },
 }
 
