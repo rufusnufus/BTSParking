@@ -13,6 +13,14 @@ router = APIRouter()
 @router.post(
     "/request-login-link",
     summary="Generate a one-time link that will log a user in with their e-mail",
+    responses={
+        status.HTTP_204_NO_CONTENT: {
+            "description": "A login link is sent to the e-mail successfully.",
+        },
+        status.HTTP_400_BAD_REQUEST: {
+            "description": "The provided e-mail is invalid.",
+        },
+    },
 )
 async def send_login_link(user: User):
     email = user.dict()["email"]
@@ -38,6 +46,21 @@ async def send_login_link(user: User):
 @router.post(
     "/get-login-code",
     summary="Temporary endpoint to bypass e-mail and just get a login code",
+    responses={
+        status.HTTP_200_OK: {
+            "description": "A login code is returned successfully.",
+            "content": {
+                "application/json": {
+                    "examples": {
+                        "login-code": {
+                            "summary": "login-code",
+                            "value": "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824",
+                        },
+                    }
+                }
+            },
+        },
+    },
 )
 async def get_login_code(user: User):
     user_exists = await ModelUser.get(**user.dict())
@@ -55,6 +78,11 @@ async def get_login_code(user: User):
 @router.post(
     "/activate-login-link",
     summary="Perform authorization by a given one-time login code",
+    responses={
+        status.HTTP_204_NO_CONTENT: {
+            "description": "Successful authorization.",
+        },
+    },
 )
 async def activate_login_link(login_code: str):
     email = await ModelUser.validate_magic_link(login_code)
@@ -83,6 +111,21 @@ async def activate_login_link(login_code: str):
     "/me",
     summary="Return the information about the currently logged in user",
     status_code=status.HTTP_200_OK,
+    responses={
+        status.HTTP_200_OK: {
+            "description": "User information returned successfully.",
+            "content": {
+                "application/json": {
+                    "examples": {
+                        "user-info": {
+                            "summary": "user-info",
+                            "value": {"email": "user@example.com", "is_admin": False},
+                        },
+                    }
+                }
+            },
+        },
+    },
 )
 async def get_user_info(AUTH_TOKEN: Optional[str] = Cookie(None)):
     valid_email = await ModelUser.check_cookie(AUTH_TOKEN)
@@ -97,6 +140,11 @@ async def get_user_info(AUTH_TOKEN: Optional[str] = Cookie(None)):
     "/logout",
     summary="Terminate a user's session",
     status_code=status.HTTP_204_NO_CONTENT,
+    responses={
+        status.HTTP_204_NO_CONTENT: {
+            "description": "Session terminated successfully.",
+        },
+    },
 )
 async def logout(AUTH_TOKEN: Optional[str] = Cookie(None)):
     valid_email = await ModelUser.check_cookie(AUTH_TOKEN)

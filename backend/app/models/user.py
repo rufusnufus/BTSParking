@@ -8,7 +8,7 @@ users = Table(
     "users",
     metadata,
     Column("email", String(64), primary_key=True, index=True),
-    Column("token", String(256), index=True),
+    Column("token", String(64), index=True),
     Column("token_expire_time", Float),
     Column("cookie", String(256), index=True),
     Column("is_admin", Boolean, default=False, nullable=False),
