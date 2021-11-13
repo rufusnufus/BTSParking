@@ -3,16 +3,11 @@ from typing import Optional
 from fastapi import APIRouter, Cookie, HTTPException, Response, status
 from fastapi.encoders import jsonable_encoder
 
-from ..exceptions import EXCEPTION_401
-from ..models import Car as ModelCar
-from ..models import Space
-from ..models import User as ModelUser
+from app.models.car import Car as ModelCar
+from app.models.space import Space
+from app.models.user import User as ModelUser
 
-router = APIRouter(
-    prefix="/zones",
-    tags=["Booking"],
-    responses={404: {"description": "Not found"}},
-)
+router = APIRouter()
 
 
 @router.get(
@@ -65,7 +60,7 @@ async def get_free_spaces(zone_id: int, AUTH_TOKEN: Optional[str] = Cookie(None)
     valid_email = await ModelUser.check_cookie(AUTH_TOKEN)
     if not valid_email:
         # user is not authorized
-        raise EXCEPTION_401
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED)
 
     free_spaces = await Space.get_free_spaces(zone_id)
     json_free_spaces = []
@@ -94,7 +89,7 @@ async def book_space(
     valid_email = await ModelUser.check_cookie(AUTH_TOKEN)
     if not valid_email:
         # user is not authorized
-        raise EXCEPTION_401
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED)
 
     free_space = await Space.check_free_space(space_id, zone_id)
     if not free_space:
@@ -115,7 +110,7 @@ async def book_release(
     valid_email = await ModelUser.check_cookie(AUTH_TOKEN)
     if not valid_email:
         # user is not authorized
-        raise EXCEPTION_401
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED)
 
     free_space = await Space.check_free_space(space_id, zone_id)
     if free_space:

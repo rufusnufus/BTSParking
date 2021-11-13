@@ -1,27 +1,13 @@
-import os
-import time
-from hashlib import sha256
 from typing import Optional
 
-import requests
-import sendgrid
-from dotenv import load_dotenv
-from fastapi import APIRouter, Cookie, Response, status
-from sendgrid.helpers.mail import Content, Email, Mail, To
+from fastapi import APIRouter, Cookie, HTTPException, Response, status
 
-from ..exceptions import EXCEPTION_401
-from ..models import User as ModelUser
-from ..schema import User
+from app.core.security import create_access_code, verified_email
+from app.models.user import User as ModelUser
+from app.schemas.user import User
+from app.utils import send_link_to_email
 
-router = APIRouter(
-    prefix="",
-    tags=["Authorization"],
-    responses={404: {"description": "Not found"}},
-)
-
-
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-load_dotenv(os.path.join(BASE_DIR, "../.env"))
+router = APIRouter()
 
 
 @router.post(
@@ -29,47 +15,21 @@ load_dotenv(os.path.join(BASE_DIR, "../.env"))
     summary="Generate a one-time link that will log a user in with their e-mail",
 )
 async def send_login_link(user: User):
-    response = requests.get(
-        os.environ.get("REAL_EMAIL_API_LINK"),
-        params={"email": user.dict()["email"]},
-        headers={"Authorization": "Bearer " + os.environ.get("REAL_EMAIL_API_KEY")},
-    )
-    response_status = response.json()["status"]
-    if response_status == "invalid":
+    email = user.dict()["email"]
+    if not verified_email(email):
         return Response(status_code=status.HTTP_400_BAD_REQUEST)
 
     user_exists = await ModelUser.get(**user.dict())
-
     if not user_exists:
         await ModelUser.create(**user.dict(), is_admin=False)
 
-    email = user.dict()["email"]
-    link_create_time = time.time()
-    link_expire_time = time.time() + 60 * 5
-    user_data = f"{email}{link_create_time}"
-    login_code = sha256(user_data.encode("utf-8")).hexdigest()
+    login_code, code_expire_time = create_access_code(email)
     magic_link = f"http://127.0.0.1:80/login?code={login_code}"
 
-    await ModelUser.set_magic_link(email, login_code, link_expire_time)
-    sg = sendgrid.SendGridAPIClient(api_key=os.environ.get("SENDGRID_API_KEY"))
-    from_email = Email(os.environ.get("FROM_EMAIL"))
-    to_email = To(email)
-    subject = "Sending login link for BTSParking service"
-    content = Content(
-        "text/html",
-        f'''<html>
-                <head>
-                </head>
-                <body>Hello! Click
-                     <a href="{magic_link}">the following link</a>
-                     to login to BTSParking service.
-                </body>
-            </html>''',
-    )
-    mail = Mail(from_email, to_email, subject, content)
-    response = sg.client.mail.send.post(request_body=mail.get())
+    await ModelUser.set_magic_link(email, login_code, code_expire_time)
 
-    if response.status_code == 202:
+    status_code = send_link_to_email(email, magic_link)
+    if status_code == 202:
         return Response(status_code=status.HTTP_204_NO_CONTENT)
     else:
         return Response(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -85,12 +45,10 @@ async def get_login_code(user: User):
     if not user_exists:
         await ModelUser.create(**user.dict(), is_admin=False)
 
-    link_create_time = time.time()
-    link_expire_time = time.time() + 60 * 5
-    user_data = f"{user.dict()['email']}{link_create_time}"
-    login_code = sha256(user_data.encode("utf-8")).hexdigest()
+    email = user.dict()["email"]
+    login_code, code_expire_time = create_access_code(email)
 
-    await ModelUser.set_magic_link(user.dict()["email"], login_code, link_expire_time)
+    await ModelUser.set_magic_link(email, login_code, code_expire_time)
     return login_code
 
 
@@ -102,8 +60,7 @@ async def activate_login_link(login_code: str):
     email = await ModelUser.validate_magic_link(login_code)
     if email:
         await ModelUser.delete_magic_link(email)
-        cookie = f"{email}{time.time()}"
-        cookie = sha256(cookie.encode("utf-8")).hexdigest()
+        cookie, _ = create_access_code(email)
         try:
             await ModelUser.set_cookie(email, cookie)
             response = Response(status_code=status.HTTP_204_NO_CONTENT)
@@ -131,7 +88,7 @@ async def get_user_info(AUTH_TOKEN: Optional[str] = Cookie(None)):
     valid_email = await ModelUser.check_cookie(AUTH_TOKEN)
     if not valid_email:
         # user is not authorized
-        raise EXCEPTION_401
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     user = await ModelUser.get_info(valid_email)
     return user
 
@@ -145,7 +102,7 @@ async def logout(AUTH_TOKEN: Optional[str] = Cookie(None)):
     valid_email = await ModelUser.check_cookie(AUTH_TOKEN)
     if not valid_email:
         # user is not authorized
-        raise EXCEPTION_401
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
 
     await ModelUser.delete_cookie(AUTH_TOKEN)
     response = Response(status_code=status.HTTP_204_NO_CONTENT)
