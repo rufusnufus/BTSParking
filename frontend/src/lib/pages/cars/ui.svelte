@@ -1,5 +1,5 @@
 <script lang="ts">
-  import CarDisplayCard from '$lib/entities/car';
+  import { CarDisplayCard } from '$lib/entities/car';
   import type { Car } from '$lib/shared/api';
 
   export let cars: Car[];
