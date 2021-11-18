@@ -12,6 +12,7 @@ paths:
 
   /request-login-link:
     post:
+      operationId: requestLoginLink
       summary: Generate a one-time link that will log a user in with their e-mail.
       tags:
         - Authorization
@@ -30,6 +31,7 @@ paths:
 
   /get-login-code:
     post:
+      operationId: getLoginCode
       summary: Temporary endpoint to bypass e-mail and just get a login code.
       tags:
         - Authorization
@@ -53,6 +55,7 @@ paths:
 
   /activate-login-link:
     post:
+      operationId: activateLoginLink
       summary: Perform authorization by a given one-time login code.
       tags:
         - Authorization
@@ -80,6 +83,7 @@ paths:
 
   /me:
     get:
+      operationId: me
       summary: Return the information about the currently logged in user.
       tags:
         - Authorization
@@ -97,6 +101,7 @@ paths:
 
   /logout:
     post:
+      operationId: logOut
       summary: Terminate a user's session.
       tags:
         - Authorization
@@ -114,6 +119,7 @@ paths:
 
   /zones/{zone_id}/spaces:
     get:
+      operationId: listSpaces
       summary: List all the spaces in the zone along with the current occupying vehicles.
       tags:
         - Booking
@@ -135,6 +141,7 @@ paths:
 
   /zones/{zone_id}/free-spaces:
     get:
+      operationId: listFreeSpaces
       summary: List the spaces that are available for parking.
       tags:
         - Booking
@@ -150,6 +157,7 @@ paths:
 
   /zones/{zone_id}/book:
     post:
+      operationId: bookSpace
       summary: Book a parking space.
       tags:
         - Booking
@@ -178,6 +186,7 @@ paths:
 
   /zones/{zone_id}/release:
     post:
+      operationId: releaseSpace
       summary: Stop occupying a parking space.
       tags:
         - Booking
@@ -209,6 +218,7 @@ paths:
 
   /cars:
     get:
+      operationId: listCars
       summary: List the saved cars.
       tags:
         - Car Management
@@ -227,6 +237,7 @@ paths:
           $ref: '#/components/responses/Unauthorized'
 
     post:
+      operationId: createCar
       summary: Create a new car.
       tags:
         - Car Management
@@ -257,6 +268,7 @@ paths:
 
   /cars/{car_id}:
     delete:
+      operationId: deleteCar
       summary: Delete a saved car.
       tags:
         - Car Management
