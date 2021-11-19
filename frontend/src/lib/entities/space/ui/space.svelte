@@ -6,8 +6,10 @@
 
 <div
   role="button"
+  tabindex="0"
   class="space p-2 flex flex-col items-center justify-between rounded-lg hover:scale-105 transition-transform shadow-md hover:shadow-lg before:block font-medium text-white"
   class:free
+  on:click
   {style}
 >
   <span class="text-3xl">{name}</span>

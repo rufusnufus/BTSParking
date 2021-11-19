@@ -6,9 +6,9 @@
 
 <script lang="ts">
   import { ZonesPage } from '$lib/pages/zones';
-  import type { MapDefinition } from '$lib/shared/types';
+  import type { ParkingLotMapDefinition } from '$lib/shared/types';
 
-  export let mapDefinition: MapDefinition;
+  export let mapDefinition: ParkingLotMapDefinition;
 </script>
 
 <ZonesPage {mapDefinition} />

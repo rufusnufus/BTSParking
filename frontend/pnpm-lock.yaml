@@ -22,6 +22,7 @@ specifiers:
   svelte-class-transition: ^1.0.4
   svelte-feather-icons: ^3.5.0
   svelte-preprocess: ^4.9.8
+  svelte-simple-modal: ^1.1.1
   tailwindcss: ^2.2.16
   tslib: ^2.3.1
   typescript: ^4.4.3
@@ -50,6 +51,7 @@ devDependencies:
   svelte-class-transition: 1.0.4_svelte@3.44.1
   svelte-feather-icons: 3.5.0
   svelte-preprocess: 4.9.8_1efe055846dc052112d100fb64c56a4d
+  svelte-simple-modal: 1.1.1_svelte@3.44.1
   tailwindcss: 2.2.19_0c54bdadaf9d9c9c6c134cb2c6c061a3
   tslib: 2.3.1
   typescript: 4.4.4
@@ -2482,6 +2484,14 @@ packages:
       strip-indent: 3.0.0
       svelte: 3.44.1
       typescript: 4.4.4
+    dev: true
+
+  /svelte-simple-modal/1.1.1_svelte@3.44.1:
+    resolution: {integrity: sha512-2u6bGk0TwZ/0oxIEX9d2shQZsqKGQwyJHHL4eiNL2e/wDA9k5zHc9F884Y0qmKa/Pg0D80t+5CrY3At3zmUDzA==}
+    peerDependencies:
+      svelte: ^3.31.2
+    dependencies:
+      svelte: 3.44.1
     dev: true
 
   /svelte/3.44.1:

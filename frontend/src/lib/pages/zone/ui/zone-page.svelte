@@ -1,8 +1,12 @@
 <script lang="ts">
+  import { getContext } from 'svelte';
   import LeftArrowAlt from '@svicons/boxicons-regular/left-arrow-alt.svelte';
 
   import { ZoneMap } from '$lib/widgets/zone-map';
+  import { BookingModal } from '$lib/widgets/booking-modal';
   import type { ZoneMapDefinition } from '$lib/shared/types';
+
+  const { open } = getContext('simple-modal');
 
   export let mapDefinition: ZoneMapDefinition;
 </script>
@@ -18,5 +22,8 @@
   </a>
 </nav>
 <main class="flex-1 flex items-center justify-center">
-  <ZoneMap {...mapDefinition} />
+  <ZoneMap
+    {...mapDefinition}
+    on:space-requested={() => open(BookingModal, {}, { styleContent: { padding: 0 }, closeButton: false })}
+  />
 </main>

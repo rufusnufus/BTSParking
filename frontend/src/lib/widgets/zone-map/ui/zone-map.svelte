@@ -1,5 +1,5 @@
 <script lang="ts">
-  // import { bookSpace } from '$lib/features/booking';
+  import { createEventDispatcher } from 'svelte';
   import { Space } from '$lib/entities/space';
   import { fixedAspectRatio, placeOnGrid } from '$lib/shared/ui';
   import type { ZoneMapDefinition } from '$lib/shared/types';
@@ -9,6 +9,8 @@
   export let objects: ZoneMapDefinition['objects'];
 
   $: aspectRatio = width / height;
+
+  const dispatch = createEventDispatcher();
 </script>
 
 <div class="flex-1 relative bg-gray-100 m-8" use:fixedAspectRatio={aspectRatio}>
@@ -18,6 +20,7 @@
         name={object.id.toString()}
         free={object.free}
         style={placeOnGrid(object.start, object.end, width, height)}
+        on:click={() => dispatch('space-requested', object.id)}
       />
     {:else}
       <div
