@@ -30,8 +30,18 @@ export interface Gate extends Rectangle {
   name: string;
 }
 
-export interface MapDefinition {
+export interface Space extends Rectangle {
+  type: 'space';
+  id: number;
+  free: boolean;
+}
+
+interface MapDefinition<ObjectType> {
   width: number;
   height: number;
-  objects: Array<Zone | Road | Divider | Gate>;
+  objects: ObjectType[];
 }
+
+export type ParkingLotMapDefinition = MapDefinition<Zone | Road | Divider | Gate>;
+
+export type ZoneMapDefinition = MapDefinition<Space | Road>;
