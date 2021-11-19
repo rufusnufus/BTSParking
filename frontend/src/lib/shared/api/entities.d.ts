@@ -1,8 +1,3 @@
-export interface Point {
-  x: number;
-  y: number;
-}
-
 export interface Car {
   id: number;
   model: string;
@@ -13,9 +8,6 @@ export interface FreeSpace {
   id: number;
 }
 
-export interface Zone {
-  id: number;
-  name: string;
-  start: Point;
-  end: Point;
+export interface Space extends FreeSpace {
+  occupying_car_id: number;
 }

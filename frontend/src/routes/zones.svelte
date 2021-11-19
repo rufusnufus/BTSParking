@@ -1,14 +1,14 @@
 <script lang="ts" context="module">
-  import { fetchZones } from '$lib/pages/zones';
+  import { mockFetchGlobalMap } from '$lib/pages/zones';
 
-  export const load = fetchZones;
+  export const load = mockFetchGlobalMap;
 </script>
 
 <script lang="ts">
   import { ZonesPage } from '$lib/pages/zones';
-  import type { Zone } from '$lib/shared/api';
+  import type { MapDefinition } from '$lib/shared/types';
 
-  export let zones: Zone[];
+  export let mapDefinition: MapDefinition;
 </script>
 
-<ZonesPage {zones} />
+<ZonesPage {mapDefinition} />

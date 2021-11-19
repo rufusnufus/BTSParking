@@ -1,13 +1,14 @@
 <script lang="ts">
   import { ZoneMap } from '$lib/widgets/zone-map';
-  import type { Zone } from '$lib/shared/api';
+  import type { MapDefinition } from '$lib/shared/types';
 
-  export let zones: Zone[];
+  import { injectBoundaries } from './lib/inject-boundaries';
 
-  const parkingLotWidth = 200;
-  const parkingLotHeight = 100;
+  export let mapDefinition: MapDefinition;
+
+  $: injectBoundaries(mapDefinition);
 </script>
 
-<main class="flex items-center justify-center">
-  <ZoneMap aspectRatio={parkingLotWidth / parkingLotHeight} {zones} />
+<main class="flex-1 flex items-center justify-center">
+  <ZoneMap {...mapDefinition} />
 </main>
