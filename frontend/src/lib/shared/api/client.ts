@@ -1,7 +1,7 @@
 import ky from 'ky';
 import type { Options as KyOptions } from 'ky';
 
-import type { Car, FreeSpace } from './entities';
+import type { Car, FreeSpace, Space } from './entities';
 
 
 export const prefix = vite.define.backendPrefixURL ?? 'http://localhost:8000';
@@ -31,9 +31,24 @@ class API {
     return this.apiClient.post('activate-login-link', { json: { code: loginCode } });
   }
 
+  /** Fetch information of oneself. */
+  me() {
+    return this.apiClient.get('me');
+  }
+
   /** Terminate a user's session. */
   logOut() {
     return this.apiClient.post('logout');
+  }
+
+  /** List the zones in a parking lot. */
+  listZones(): Promise<never> {
+    return this.apiClient.get('zones').json();
+  }
+
+  /** List all spaces in a zone with their occupants, if any. */
+  listSpaces(zoneID: number): Promise<Space[]> {
+    return this.apiClient.get(`zones/${zoneID}/spaces`).json();
   }
 
   /** List the spaces that are available for parking. */

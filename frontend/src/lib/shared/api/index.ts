@@ -1,2 +1,2 @@
 export { default } from './client';
-export * from './entities';
+export type { Car, FreeSpace } from './entities';
