@@ -93,8 +93,8 @@ async def activate_login_link(login_code: AuthData):
             await ModelUser.set_cookie(email, cookie)
             response = Response(status_code=status.HTTP_204_NO_CONTENT)
             response.set_cookie(
-                "AUTH_TOKEN",
-                value=f"{cookie}",
+                key="AUTH_TOKEN",
+                value=cookie,
                 max_age=43200,
                 expires=43200,
             )
@@ -125,8 +125,8 @@ async def activate_login_link(login_code: AuthData):
         },
     },
 )
-async def get_user_info(AUTH_TOKEN: Optional[str] = Cookie(default=None)):
-    valid_email = await ModelUser.check_cookie(AUTH_TOKEN)
+async def get_user_info(cookie_auth: Optional[str] = Cookie(default=None)):
+    valid_email = await ModelUser.check_cookie(cookie_auth)
     if not valid_email:
         # user is not authorized
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
@@ -144,15 +144,14 @@ async def get_user_info(AUTH_TOKEN: Optional[str] = Cookie(default=None)):
         },
     },
 )
-async def logout(AUTH_TOKEN: Optional[str] = Cookie(None)):
-    valid_email = await ModelUser.check_cookie(AUTH_TOKEN)
+async def logout(cookie_auth: Optional[str] = Cookie(default=None)):
+    valid_email = await ModelUser.check_cookie(cookie_auth)
     if not valid_email:
         # user is not authorized
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
-
-    await ModelUser.delete_cookie(AUTH_TOKEN)
+    await ModelUser.delete_cookie(cookie_auth)
     response = Response(status_code=status.HTTP_204_NO_CONTENT)
-    response.delete_cookie("AUTH_TOKEN", domain="localhost")
+    response.delete_cookie(key="AUTH_TOKEN")
     return response
 
 

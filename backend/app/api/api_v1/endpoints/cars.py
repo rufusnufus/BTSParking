@@ -44,9 +44,9 @@ async def create_car(
             },
         },
     ),
-    AUTH_TOKEN: Optional[str] = Cookie(None),
+    cookie_auth: Optional[str] = Cookie(None),
 ):
-    valid_email = await ModelUser.check_cookie(AUTH_TOKEN)
+    valid_email = await ModelUser.check_cookie(cookie_auth)
     if not valid_email:
         # user is not authorized
         raise HTTPException(status.HTTP_401_UNAUTHORIZED)
@@ -79,8 +79,8 @@ async def create_car(
         },
     },
 )
-async def get_cars(AUTH_TOKEN: Optional[str] = Cookie(None)):
-    valid_email = await ModelUser.check_cookie(AUTH_TOKEN)
+async def get_cars(cookie_auth: Optional[str] = Cookie(None)):
+    valid_email = await ModelUser.check_cookie(cookie_auth)
     if not valid_email:
         # user is not authorized
         raise HTTPException(status.HTTP_401_UNAUTHORIZED)
@@ -109,8 +109,8 @@ async def get_cars(AUTH_TOKEN: Optional[str] = Cookie(None)):
         },
     },
 )
-async def delete_car(car_id: int, AUTH_TOKEN: Optional[str] = Cookie(None)):
-    valid_email = await ModelUser.check_cookie(AUTH_TOKEN)
+async def delete_car(car_id: int, cookie_auth: Optional[str] = Cookie(None)):
+    valid_email = await ModelUser.check_cookie(cookie_auth)
     if not valid_email:
         # user is not authorized
         raise HTTPException(status.HTTP_401_UNAUTHORIZED)
@@ -128,8 +128,8 @@ async def delete_car(car_id: int, AUTH_TOKEN: Optional[str] = Cookie(None)):
 
 
 # @router.get("/{car_id}", response_model=OutputCar)
-async def get_saved_car(car_id: int, AUTH_TOKEN: Optional[str] = Cookie(None)):
-    valid_email = await ModelUser.check_cookie(AUTH_TOKEN)
+async def get_saved_car(car_id: int, cookie_auth: Optional[str] = Cookie(None)):
+    valid_email = await ModelUser.check_cookie(cookie_auth)
     if not valid_email:
         # user is not authorized
         raise HTTPException(status.HTTP_401_UNAUTHORIZED)
