@@ -85,7 +85,7 @@ async def get_login_code(user: User):
     },
 )
 async def activate_login_link(login_code: LoginCode):
-    email = await ModelUser.validate_magic_link(login_code)
+    email = await ModelUser.validate_magic_link(login_code.dict()["login_code"])
     if email:
         await ModelUser.delete_magic_link(email)
         cookie, _ = create_access_code(email)
