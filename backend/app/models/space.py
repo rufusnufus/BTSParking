@@ -40,20 +40,20 @@ class Space:
         return space
 
     @classmethod
-    async def check_free_space(cls, id, zone_id):
+    async def check_free_space(cls, space_id, zone_id):
         query = spaces.select().where(
             and_(
-                spaces.c.id == id, spaces.c.zone_id == zone_id, spaces.c.car_id == None
+                spaces.c.id == space_id, spaces.c.zone_id == zone_id, spaces.c.car_id == None
             )
         )
         free_space = await db.fetch_one(query)
         return True if free_space else False
 
     @classmethod
-    async def book_space(cls, id, zone_id, car_id):
+    async def book_space(cls, space_id, zone_id, car_id):
         query = (
             spaces.update()
-            .where(and_(spaces.c.id == id, spaces.c.zone_id == zone_id))
+            .where(and_(spaces.c.id == space_id, spaces.c.zone_id == zone_id))
             .values(
                 car_id=car_id,
             )
@@ -61,7 +61,7 @@ class Space:
         await db.execute(query)
         query = spaces.select().where(
             and_(
-                spaces.c.id == id,
+                spaces.c.id == space_id,
                 spaces.c.zone_id == zone_id,
                 spaces.c.car_id == car_id,
             )
