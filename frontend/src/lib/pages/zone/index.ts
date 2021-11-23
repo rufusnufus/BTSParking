@@ -1,2 +1,2 @@
-export { mockFetchZoneMap } from './model/mock-fetch-zone-map';
+export { mockFetchZoneMap } from './model';
 export { default as ZonePage } from './ui/zone-page.svelte';

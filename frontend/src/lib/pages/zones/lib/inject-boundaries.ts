@@ -1,6 +1,8 @@
-import type { MapDefinition } from '$lib/shared/types';
+import type { Divider, MapDefinition } from '$lib/shared/types';
 
-export function injectBoundaries(mapDefinition: MapDefinition): void {
+export function injectBoundaries<OtherObjectType>(
+  mapDefinition: MapDefinition<Divider | OtherObjectType>
+): void {
   mapDefinition.objects.push(
     {
       type: 'divider',

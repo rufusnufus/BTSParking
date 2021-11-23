@@ -6,7 +6,7 @@ export interface MenuItemData {
   action?: () => void;
 }
 
-export default <MenuItemData[]>[
+export const menuItems: MenuItemData[] = [
   {
     text: 'My cars',
     href: '/cars',

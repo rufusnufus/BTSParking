@@ -1,1 +1,1 @@
-export { default as CheckMagicLinkPage } from './ui.svelte';
+export { default as CheckMagicLinkPage } from './ui/check-magic-link-page.svelte';

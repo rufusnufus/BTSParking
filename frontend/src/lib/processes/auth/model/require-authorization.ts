@@ -1,6 +1,6 @@
 import type { Load } from '@sveltejs/kit';
 
-const skipHomeForAuthorizedUsers: Load = ({ session }) => {
+export const requireAuthorization: Load = ({ session }) => {
   if (!session.authenticated) {
     return {
       redirect: '/login',
@@ -11,4 +11,3 @@ const skipHomeForAuthorizedUsers: Load = ({ session }) => {
   return {};
 }
 
-export default skipHomeForAuthorizedUsers;

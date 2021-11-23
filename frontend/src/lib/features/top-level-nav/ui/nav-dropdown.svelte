@@ -3,7 +3,7 @@
 
   import { ProfileDropdownToggle } from '$lib/entities/user';
   import MenuItem from './menu-item.svelte';
-  import menuItems from '../model/menu-items';
+  import { menuItems } from '../model/menu-items';
 
   let dropdownShown = false;
 

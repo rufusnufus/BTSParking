@@ -1,5 +1,5 @@
 <script lang="ts">
-  import submitAuthData from '../model/submit-auth-data';
+  import { submitAuthData } from '../model/submit-auth-data';
 
   let email: string | undefined;
 </script>

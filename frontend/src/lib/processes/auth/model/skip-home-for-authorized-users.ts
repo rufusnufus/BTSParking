@@ -1,6 +1,6 @@
 import type { Load } from '@sveltejs/kit';
 
-const skipHomeForAuthorizedUsers: Load = ({ session }) => {
+export const skipHomeForAuthorizedUsers: Load = ({ session }) => {
   if (session.authorized) {
     return {
       status: 302,
@@ -11,4 +11,3 @@ const skipHomeForAuthorizedUsers: Load = ({ session }) => {
   return {};
 }
 
-export default skipHomeForAuthorizedUsers;

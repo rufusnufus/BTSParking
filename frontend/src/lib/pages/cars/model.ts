@@ -2,7 +2,7 @@ import type { Load } from '@sveltejs/kit';
 
 import api from '$lib/shared/api';
 
-const fetchCars: Load = async ({ fetch }) => {
+export const fetchCars: Load = async ({ fetch }) => {
   try {
     return {
       props: {
@@ -18,5 +18,3 @@ const fetchCars: Load = async ({ fetch }) => {
     };
   }
 }
-
-export default fetchCars;

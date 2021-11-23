@@ -1,1 +1,1 @@
-export { default as HomePage } from './ui.svelte';
+export { default as HomePage } from './ui/home-page.svelte';

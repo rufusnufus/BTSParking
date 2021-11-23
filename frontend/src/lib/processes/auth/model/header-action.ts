@@ -8,7 +8,7 @@ import { NavDropdown } from '$lib/features/top-level-nav'
 
 type HeaderActionComponent = typeof SvelteComponent;
 
-const headerAction: Readable<HeaderActionComponent | null> = derived(
+export const headerAction: Readable<HeaderActionComponent | null> = derived(
   [page, session],
   ([$page, $session]) => {
     if ($page.path === '/check-magic-link') {
@@ -22,5 +22,3 @@ const headerAction: Readable<HeaderActionComponent | null> = derived(
     }
   }
 )
-
-export default headerAction;
