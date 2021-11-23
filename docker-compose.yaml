@@ -29,7 +29,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: backend 
-    command: bash -c "uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+    command: bash -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
     volumes:
       - ./backend:/home/app/app/
     ports:
