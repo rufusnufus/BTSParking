@@ -95,8 +95,6 @@ async def activate_login_link(login_code: AuthData):
             response.set_cookie(
                 "AUTH_TOKEN",
                 value=f"{cookie}",
-                domain="localhost",
-                httponly=True,
                 max_age=43200,
                 expires=43200,
             )
@@ -127,7 +125,7 @@ async def activate_login_link(login_code: AuthData):
         },
     },
 )
-async def get_user_info(AUTH_TOKEN: Optional[str] = Cookie(None)):
+async def get_user_info(AUTH_TOKEN: Optional[str] = Cookie(default=None)):
     valid_email = await ModelUser.check_cookie(AUTH_TOKEN)
     if not valid_email:
         # user is not authorized

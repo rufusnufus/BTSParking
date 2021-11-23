@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.api_v1 import api
 from app.db import db
 
-app = FastAPI()
+app = FastAPI(title="Async FastAPI")
 
 origins = [
     "http://localhost:3000",
@@ -17,9 +17,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
-app = FastAPI(title="Async FastAPI")
 
 app.include_router(api.router)
 

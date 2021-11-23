@@ -19,7 +19,7 @@ router = APIRouter(
 
 @router.get(
     "/",
-    summary="List all zones",
+    summary="List all zones in a parking lot",
 )
 async def get_zones(AUTH_TOKEN: Optional[str] = Cookie(None)):
     valid_email = await ModelUser.check_cookie(AUTH_TOKEN)

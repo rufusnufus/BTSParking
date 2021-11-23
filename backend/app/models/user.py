@@ -93,11 +93,17 @@ class User:
     @classmethod
     async def check_cookie(cls, cookie):
         query = users.select().where(users.c.cookie == cookie)
-        email = await db.execute(query)
-        return email
+        user = await db.fetch_one(query)
+        if user:
+            return dict(user)["email"] 
+        return None
 
     @classmethod
     async def delete_cookie(cls, cookie):
-        query = users.delete().where(users.c.cookie == cookie)
+        query = (
+            users.update()
+            .where(users.c.cookie == cookie)
+            .values(cookie=None)
+        )
         email = await db.execute(query)
         return email
