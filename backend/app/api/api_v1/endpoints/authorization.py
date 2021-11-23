@@ -4,7 +4,7 @@ from fastapi import APIRouter, Cookie, HTTPException, Response, status
 
 from app.core.security import create_access_code, verified_email
 from app.models.user import User as ModelUser
-from app.schemas.user import User, LoginCode
+from app.schemas.user import User, AuthData
 from app.utils import send_link_to_email
 
 router = APIRouter()
@@ -84,7 +84,7 @@ async def get_login_code(user: User):
         },
     },
 )
-async def activate_login_link(login_code: LoginCode):
+async def activate_login_link(login_code: AuthData):
     email = await ModelUser.validate_magic_link(login_code.dict()["login_code"])
     if email:
         await ModelUser.delete_magic_link(email)
