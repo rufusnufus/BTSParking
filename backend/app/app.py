@@ -7,7 +7,7 @@ from app.db import db
 app = FastAPI(title="Async FastAPI")
 
 origins = [
-    "http://localhost:3000",
+    "http://localhost:3000", '*'
 ]
 
 app.add_middleware(
