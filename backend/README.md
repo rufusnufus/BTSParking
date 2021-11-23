@@ -7,7 +7,7 @@ This is the backend server written on FastAPI and using Postgres as a database.
     cd backend
     ```
 
-2. Create `.env` file with the following variables:
+2. Create `.env` file in [app folder](https://github.com/rufusnufus/BTSParking/tree/main/backend/app) with the following variables:
     ```env
     DATABASE_URL=postgresql://postgres:postgres@db:5432/postgres
     SENDGRID_API_KEY=<YOUR SENDGRID API KEY>

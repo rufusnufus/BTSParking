@@ -32,11 +32,12 @@ To run from the master branch, follow the instructions below:
     git clone https://github.com/rufusnufus/BTSParking.git
     cd BTSParking
     ```
-2. [Optional] Build the docker-compose.
+2. Add env variables to backend(see [backend/README.md](https://github.com/rufusnufus/BTSParking/blob/main/backend/README.md)).
+3. [Optional] Build the docker-compose.
     ```bash
     docker-compose build
    ```
-3. Run the services. Web app will open at [http://127.0.0.1:80/](http://localhost:80/). Backend of the app is available at [http://127.0.0.1:8000/docs](http://localhost:8000/docs).
+4. Run the services. Web app will open at [http://127.0.0.1:80/](http://localhost:80/). Backend of the app is available at [http://127.0.0.1:8000/docs](http://localhost:8000/docs).
     ```
     docker-compose up -d
     ```
