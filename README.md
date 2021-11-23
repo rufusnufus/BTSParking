@@ -34,7 +34,8 @@ To run from the `main` branch, follow the instructions below:
    git clone https://github.com/rufusnufus/BTSParking.git
    cd BTSParking
    ```
-2. Run the services:
+2. Add environment variables to the backend (see [backend/README.md](./backend/README.md)).
+3. Run the services:
    ```
    docker-compose up -d
    ```

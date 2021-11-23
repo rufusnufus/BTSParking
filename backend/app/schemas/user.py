@@ -6,3 +6,6 @@ class User(BaseModel):
 
     class Config:
         orm_mode = True
+
+class AuthData(BaseModel):
+    login_code: str
