@@ -3,6 +3,7 @@ from typing import Optional
 from fastapi import APIRouter, Body, Cookie, HTTPException, Response, status
 from fastapi.encoders import jsonable_encoder
 
+from app.core.security import cookie_is_none
 from app.models.car import Car as ModelCar
 from app.models.user import User as ModelUser
 from app.schemas.car import InputCar, OutputCar
@@ -46,6 +47,8 @@ async def create_car(
     ),
     cookie_auth: Optional[str] = Cookie(None),
 ):
+    if cookie_is_none(cookie_auth):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     valid_email = await ModelUser.check_cookie(cookie_auth)
     if not valid_email:
         # user is not authorized
@@ -80,6 +83,8 @@ async def create_car(
     },
 )
 async def get_cars(cookie_auth: Optional[str] = Cookie(None)):
+    if cookie_is_none(cookie_auth):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     valid_email = await ModelUser.check_cookie(cookie_auth)
     if not valid_email:
         # user is not authorized
@@ -110,6 +115,8 @@ async def get_cars(cookie_auth: Optional[str] = Cookie(None)):
     },
 )
 async def delete_car(car_id: int, cookie_auth: Optional[str] = Cookie(None)):
+    if cookie_is_none(cookie_auth):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     valid_email = await ModelUser.check_cookie(cookie_auth)
     if not valid_email:
         # user is not authorized
@@ -129,6 +136,8 @@ async def delete_car(car_id: int, cookie_auth: Optional[str] = Cookie(None)):
 
 # @router.get("/{car_id}", response_model=OutputCar)
 async def get_saved_car(car_id: int, cookie_auth: Optional[str] = Cookie(None)):
+    if cookie_is_none(cookie_auth):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     valid_email = await ModelUser.check_cookie(cookie_auth)
     if not valid_email:
         # user is not authorized

@@ -3,6 +3,7 @@ from typing import Optional
 from fastapi import APIRouter, Cookie, HTTPException, Response, status
 from fastapi.encoders import jsonable_encoder
 
+from app.core.security import cookie_is_none
 from app.models.car import Car as ModelCar
 from app.models.space import Space
 from app.models.user import User as ModelUser
@@ -22,6 +23,8 @@ router = APIRouter(
     summary="List all zones in a parking lot",
 )
 async def get_zones(cookie_auth: Optional[str] = Cookie(None)):
+    if cookie_is_none(cookie_auth):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     valid_email = await ModelUser.check_cookie(cookie_auth)
     if not valid_email:
         # user is not authorized
@@ -80,6 +83,8 @@ async def get_zones(cookie_auth: Optional[str] = Cookie(None)):
     },
 )
 async def get_spaces(zone_id: int, cookie_auth: Optional[str] = Cookie(None)):
+    if cookie_is_none(cookie_auth):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     valid_email = await ModelUser.check_cookie(cookie_auth)
     if not valid_email:
         # user is not authorized
@@ -141,6 +146,8 @@ async def get_spaces(zone_id: int, cookie_auth: Optional[str] = Cookie(None)):
     },
 )
 async def get_free_spaces(zone_id: int, cookie_auth: Optional[str] = Cookie(None)):
+    if cookie_is_none(cookie_auth):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     valid_email = await ModelUser.check_cookie(cookie_auth)
     if not valid_email:
         # user is not authorized
@@ -181,6 +188,8 @@ async def get_free_spaces(zone_id: int, cookie_auth: Optional[str] = Cookie(None
 async def book_space(
     zone_id: int, space_id: int, car_id: int, cookie_auth: Optional[str] = Cookie(None)
 ):
+    if cookie_is_none(cookie_auth):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     valid_email = await ModelUser.check_cookie(cookie_auth)
     if not valid_email:
         # user is not authorized
@@ -220,6 +229,8 @@ async def book_space(
 async def book_release(
     zone_id: int, space_id: int, cookie_auth: Optional[str] = Cookie(None)
 ):
+    if cookie_is_none(cookie_auth):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     valid_email = await ModelUser.check_cookie(cookie_auth)
     if not valid_email:
         # user is not authorized

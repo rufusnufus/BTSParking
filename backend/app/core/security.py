@@ -25,3 +25,6 @@ def verified_email(email: str) -> bool:
     )
     response_status = response.json()["status"]
     return False if response_status == "invalid" else True
+
+def cookie_is_none(auth_token: str) -> bool:
+    return False if auth_token else True

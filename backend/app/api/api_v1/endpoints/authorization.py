@@ -2,7 +2,7 @@ from typing import Optional
 
 from fastapi import APIRouter, Cookie, HTTPException, Response, status
 
-from app.core.security import create_access_code, verified_email
+from app.core.security import create_access_code, verified_email, cookie_is_none
 from app.models.user import User as ModelUser
 from app.schemas.user import User, AuthData
 from app.utils import send_link_to_email
@@ -126,6 +126,8 @@ async def activate_login_link(login_code: AuthData):
     },
 )
 async def get_user_info(cookie_auth: Optional[str] = Cookie(default=None)):
+    if cookie_is_none(cookie_auth):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     valid_email = await ModelUser.check_cookie(cookie_auth)
     if not valid_email:
         # user is not authorized
@@ -145,6 +147,8 @@ async def get_user_info(cookie_auth: Optional[str] = Cookie(default=None)):
     },
 )
 async def logout(cookie_auth: Optional[str] = Cookie(default=None)):
+    if cookie_is_none(cookie_auth):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     valid_email = await ModelUser.check_cookie(cookie_auth)
     if not valid_email:
         # user is not authorized
