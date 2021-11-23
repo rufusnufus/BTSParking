@@ -2,7 +2,7 @@
   import { ParkingLotMap } from '$lib/widgets/parking-lot-map';
   import type { MapDefinition } from '$lib/shared/types';
 
-  import { injectBoundaries } from '.../lib/inject-boundaries';
+  import { injectBoundaries } from '../lib/inject-boundaries';
 
   export let mapDefinition: MapDefinition;
 
