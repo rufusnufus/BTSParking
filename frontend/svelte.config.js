@@ -1,9 +1,12 @@
 import preprocess from 'svelte-preprocess';
 import adapterNode from '@sveltejs/adapter-node';
 
-const environment = {
-  'vite.define.backendPrefixURL': process.env.BACKEND_PREFIX_URL,
-};
+const environment = {};
+if (process.env.BACKEND_PREFIX_URL !== undefined) {
+  environment['vite.define.backendPrefixURL'] = JSON.stringify(
+    process.env.BACKEND_PREFIX_URL
+  );
+}
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
