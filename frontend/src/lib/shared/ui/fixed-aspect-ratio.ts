@@ -1,3 +1,4 @@
+/** Enforces a fixed aspect ratio (width / height) on an element dynamically. */
 export default function fixedAspectRatio<NodeType extends HTMLElement>(
   node: NodeType,
   aspectRatio: number
