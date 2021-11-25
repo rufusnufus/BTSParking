@@ -15,12 +15,12 @@ function parseCookieString(cookieString: string | undefined) {
 /**
  * Determine if the incoming request is authorized to access the backend.
  *
- * Populates the `$session` store with the `authorized` field.
+ * Populates the `session` object with the `token` field.
  */
 export const determineAuthorized: GetSession = request => {
   const cookies = parseCookieString(request.headers['Cookie']);
 
   return {
-    authorized: cookies.has('AUTH_TOKEN'),
+    token: cookies.get('AUTH_TOKEN'),
   };
 };
