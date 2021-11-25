@@ -1,5 +1,6 @@
 import preprocess from 'svelte-preprocess';
 import adapterNode from '@sveltejs/adapter-node';
+import Icons from 'unplugin-icons/vite';
 
 const environment = {
   'vite.define.backendPrefixURL': process.env.BACKEND_PREFIX_URL,
@@ -23,6 +24,11 @@ const config = {
     adapter: adapterNode(),
     vite: {
       define: environment,
+      plugins: [
+        Icons({
+          compiler: 'svelte',
+        }),
+      ],
     },
   },
 };

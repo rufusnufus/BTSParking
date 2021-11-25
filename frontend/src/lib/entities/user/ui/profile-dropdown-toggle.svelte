@@ -1,5 +1,5 @@
 <script lang="ts">
-  import User from '@svicons/boxicons-regular/user.svelte';
+  import IconUser from '~icons/bx/bx-user';
 
   export let id: string;
   export let dropdownShown = false;
@@ -14,5 +14,5 @@
   on:click={() => dropdownShown = !dropdownShown}
 >
   <span class="sr-only">Open user menu</span>
-  <User class="w-6 text-white" />
+  <IconUser class="w-6 h-6 text-white" />
 </button>

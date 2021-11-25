@@ -1,6 +1,6 @@
 <script lang="ts">
   import { getContext } from 'svelte';
-  import LeftArrowAlt from '@svicons/boxicons-regular/left-arrow-alt.svelte';
+  import IconLeftArrowAlt from '~icons/bx/bx-left-arrow-alt';
 
   import { ZoneMap } from '$lib/widgets/zone-map';
   import { BookingModal } from '$lib/widgets/booking-modal';
@@ -17,7 +17,7 @@
     href="/zones"
     sveltekit:prefetch
   >
-    <LeftArrowAlt class="w-6 text-white mr-1" />
+    <IconLeftArrowAlt class="w-6 h-6 text-white mr-1" />
     Back
   </a>
 </nav>

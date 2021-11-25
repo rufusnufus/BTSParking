@@ -1,6 +1,6 @@
 <script lang="ts">
   import { getContext } from 'svelte';
-  import X from '@svicons/boxicons-regular/x.svelte';
+  import IconX from '~icons/bx/bx-x';
 
   import { CarDisplayCard } from '$lib/entities/car';
   import type { Car } from '$lib/shared/api';
@@ -31,7 +31,7 @@
       class="inline-flex items-center justify-center px-4 py-2 bg-gray-800 rounded-lg text-white font-medium"
       on:click={() => close()}
     >
-      <X class="w-6 text-white mr-1" />
+      <IconX class="w-6 h-6 text-white mr-1" />
       Cancel
     </button>
   </div>
