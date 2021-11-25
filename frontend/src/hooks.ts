@@ -1,8 +1,5 @@
-import type { GetSession } from '@sveltejs/kit';
+import { determineAuthorized, interceptLoginCode } from '$lib/processes/auth';
 
-export const getSession: GetSession = (_request) => {
-	// Inspect `request.headers: Record<string, string>`
-  return {
-    authorized: true,
-  };
-}
+export const getSession = determineAuthorized;
+
+export const handle = interceptLoginCode;

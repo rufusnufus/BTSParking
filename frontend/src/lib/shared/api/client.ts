@@ -1,7 +1,7 @@
 import ky from 'ky';
 import type { Options as KyOptions } from 'ky';
 
-import type { Car, FreeSpace, Space } from './entities';
+import type { Car, FreeSpace, Space, AuthToken } from './entities';
 
 export const prefix =
   vite.define.backendPrefixURL ?? 'http://localhost:8000/api/v1';
@@ -44,10 +44,12 @@ class API {
   }
 
   /** Perform authorization by a given one-time login code. */
-  activateLoginLink(loginCode: string) {
-    return this.apiClient.post('activate-login-link', {
-      json: { login_code: loginCode },
-    });
+  activateLoginLink(loginCode: string): Promise<AuthToken> {
+    const formData = new FormData();
+    formData.append('username', '');
+    formData.append('password', loginCode);
+
+    return this.apiClient.post('activate-login-link', { body: formData }).json();
   }
 
   /** Fetch information of oneself. */

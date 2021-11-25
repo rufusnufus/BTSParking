@@ -11,3 +11,8 @@ export interface FreeSpace {
 export interface Space extends FreeSpace {
   occupying_car_id: number;
 }
+
+export interface AuthToken {
+  token_type: 'bearer',
+  access_token: string;
+}
