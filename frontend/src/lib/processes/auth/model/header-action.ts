@@ -15,7 +15,7 @@ export const headerAction: Readable<HeaderActionComponent | null> = derived(
       return null;
     }
 
-    if ($session.authorized) {
+    if ($session.token !== undefined) {
       return NavDropdown;
     } else {
       return LoginButton;
