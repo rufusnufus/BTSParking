@@ -3,8 +3,8 @@ import type { Options as KyOptions } from 'ky';
 
 import type { Car, FreeSpace, Space } from './entities';
 
-
-export const prefix = vite.define.backendPrefixURL ?? 'http://localhost:8000';
+export const prefix =
+  vite.define.backendPrefixURL ?? 'http://localhost:8000/api/v1';
 
 class API {
   private apiClient: typeof ky;
@@ -13,8 +13,24 @@ class API {
     this.apiClient = apiClientInstance ?? ky.create({ prefixUrl: prefix });
   }
 
+  /**
+   * Use a custom `fetch` function.
+   *
+   * Doesn't modify the instance, instead returns a new one.
+   */
   with(customFetch: KyOptions['fetch']) {
     return new API(this.apiClient.extend({ fetch: customFetch }));
+  }
+
+  /**
+   * Authenticate using an API token.
+   *
+   * Doesn't modify the instance, instead returns a new one.
+   */
+  auth(token: string) {
+    return new API(
+      this.apiClient.extend({ headers: { Authorization: `Bearer ${token}` } })
+    );
   }
 
   /** Generate a one-time link that will log a user in with their e-mail. */
@@ -22,13 +38,16 @@ class API {
     return this.apiClient.post('request-login-link', { json: { email } });
   }
 
+  /** Temporary endpoint to bypass e-mail and just get a login code. */
   getLoginCode(email: string): Promise<string> {
     return this.apiClient.post('get-login-code', { json: { email } }).json();
   }
 
   /** Perform authorization by a given one-time login code. */
   activateLoginLink(loginCode: string) {
-    return this.apiClient.post('activate-login-link', { json: { code: loginCode } });
+    return this.apiClient.post('activate-login-link', {
+      json: { login_code: loginCode },
+    });
   }
 
   /** Fetch information of oneself. */
@@ -77,7 +96,9 @@ class API {
 
   /** Create a new car. */
   createCar(model: string, licenseNumber: string) {
-    return this.apiClient.post('cars', { json: { model, license_number: licenseNumber } });
+    return this.apiClient.post('cars', {
+      json: { model, license_number: licenseNumber },
+    });
   }
 
   /** Delete a saved car. */
