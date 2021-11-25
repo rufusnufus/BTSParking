@@ -43,7 +43,9 @@ class Space:
     async def check_free_space(cls, space_id, zone_id):
         query = spaces.select().where(
             and_(
-                spaces.c.id == space_id, spaces.c.zone_id == zone_id, spaces.c.car_id == None
+                spaces.c.id == space_id,
+                spaces.c.zone_id == zone_id,
+                spaces.c.car_id == None,
             )
         )
         free_space = await db.fetch_one(query)

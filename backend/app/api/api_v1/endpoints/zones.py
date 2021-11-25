@@ -1,9 +1,7 @@
-from typing import Optional
-
-from fastapi import APIRouter, Body, Cookie, HTTPException, Response, status
+from fastapi import APIRouter, Body, Depends, HTTPException, Response, status
 from fastapi.encoders import jsonable_encoder
 
-from app.core.security import cookie_is_none
+from app.core.security import cookie_is_none, oauth2_scheme
 from app.models.car import Car as ModelCar
 from app.models.space import Space
 from app.models.user import User as ModelUser
@@ -22,13 +20,13 @@ router = APIRouter(
     "/",
     summary="List all zones in a parking lot",
 )
-async def get_zones(AUTH_TOKEN: Optional[str] = Cookie(None)):
-    if cookie_is_none(AUTH_TOKEN):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
-    valid_email = await ModelUser.check_cookie(AUTH_TOKEN)
-    if not valid_email:
-        # user is not authorized
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+async def get_zones():
+    # if cookie_is_none(auth_token):
+    #     raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+    # valid_email = await ModelUser.check_cookie(auth_token)
+    # if not valid_email:
+    #     # user is not authorized
+    #     raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     zones = await Zone.get_zones()
     json_zones = []
     for zone in zones:
@@ -82,10 +80,10 @@ async def get_zones(AUTH_TOKEN: Optional[str] = Cookie(None)):
         },
     },
 )
-async def get_spaces(zone_id: int, AUTH_TOKEN: Optional[str] = Cookie(None)):
-    if cookie_is_none(AUTH_TOKEN):
+async def get_spaces(zone_id: int, auth_token: str = Depends(oauth2_scheme)):
+    if cookie_is_none(auth_token):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
-    valid_email = await ModelUser.check_cookie(AUTH_TOKEN)
+    valid_email = await ModelUser.check_cookie(auth_token)
     if not valid_email:
         # user is not authorized
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
@@ -145,13 +143,13 @@ async def get_spaces(zone_id: int, AUTH_TOKEN: Optional[str] = Cookie(None)):
         },
     },
 )
-async def get_free_spaces(zone_id: int, AUTH_TOKEN: Optional[str] = Cookie(None)):
-    if cookie_is_none(AUTH_TOKEN):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
-    valid_email = await ModelUser.check_cookie(AUTH_TOKEN)
-    if not valid_email:
-        # user is not authorized
-        raise HTTPException(status.HTTP_401_UNAUTHORIZED)
+async def get_free_spaces(zone_id: int):
+    # if cookie_is_none(auth_token):
+    #     raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+    # valid_email = await ModelUser.check_cookie(auth_token)
+    # if not valid_email:
+    #     # user is not authorized
+    #     raise HTTPException(status.HTTP_401_UNAUTHORIZED)
 
     free_spaces = await Space.get_free_spaces(zone_id)
     json_free_spaces = []
@@ -186,13 +184,14 @@ async def get_free_spaces(zone_id: int, AUTH_TOKEN: Optional[str] = Cookie(None)
     },
 )
 async def book_space(
-    zone_id: int, 
-    space_id: int = Body(..., embed=True), 
-    car_id: int = Body(..., embed=True),AUTH_TOKEN: Optional[str] = Cookie(None)
+    zone_id: int,
+    space_id: int = Body(..., embed=True),
+    car_id: int = Body(..., embed=True),
+    auth_token: str = Depends(oauth2_scheme),
 ):
-    if cookie_is_none(AUTH_TOKEN):
+    if cookie_is_none(auth_token):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
-    valid_email = await ModelUser.check_cookie(AUTH_TOKEN)
+    valid_email = await ModelUser.check_cookie(auth_token)
     if not valid_email:
         # user is not authorized
         raise HTTPException(status.HTTP_401_UNAUTHORIZED)
@@ -205,7 +204,9 @@ async def book_space(
     if not free_space:
         return Response(status_code=status.HTTP_306_RESERVED)
 
-    booked_space = await Space.book_space(car_id=car_id, space_id=space_id, zone_id=zone_id)
+    booked_space = await Space.book_space(
+        car_id=car_id, space_id=space_id, zone_id=zone_id
+    )
 
     if booked_space:
         return Response(status_code=status.HTTP_204_NO_CONTENT)
@@ -229,11 +230,13 @@ async def book_space(
     },
 )
 async def book_release(
-    zone_id: int, space_id: int = Body(..., embed=True), AUTH_TOKEN: Optional[str] = Cookie(None)
+    zone_id: int,
+    space_id: int = Body(..., embed=True),
+    auth_token: str = Depends(oauth2_scheme),
 ):
-    if cookie_is_none(AUTH_TOKEN):
+    if cookie_is_none(auth_token):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
-    valid_email = await ModelUser.check_cookie(AUTH_TOKEN)
+    valid_email = await ModelUser.check_cookie(auth_token)
     if not valid_email:
         # user is not authorized
         raise HTTPException(status.HTTP_401_UNAUTHORIZED)

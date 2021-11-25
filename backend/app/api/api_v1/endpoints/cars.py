@@ -1,9 +1,7 @@
-from typing import Optional
-
-from fastapi import APIRouter, Body, Cookie, HTTPException, Response, status
+from fastapi import APIRouter, Body, Depends, HTTPException, Response, status
 from fastapi.encoders import jsonable_encoder
 
-from app.core.security import cookie_is_none
+from app.core.security import cookie_is_none, oauth2_scheme
 from app.models.car import Car as ModelCar
 from app.models.user import User as ModelUser
 from app.schemas.car import InputCar, OutputCar
@@ -45,11 +43,11 @@ async def create_car(
             },
         },
     ),
-    AUTH_TOKEN: Optional[str] = Cookie(None),
+    auth_token: str = Depends(oauth2_scheme),
 ):
-    if cookie_is_none(AUTH_TOKEN):
+    if cookie_is_none(auth_token):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
-    valid_email = await ModelUser.check_cookie(AUTH_TOKEN)
+    valid_email = await ModelUser.check_cookie(auth_token)
     if not valid_email:
         # user is not authorized
         raise HTTPException(status.HTTP_401_UNAUTHORIZED)
@@ -82,10 +80,10 @@ async def create_car(
         },
     },
 )
-async def get_cars(AUTH_TOKEN: Optional[str] = Cookie(None)):
-    if cookie_is_none(AUTH_TOKEN):
+async def get_cars(auth_token: str = Depends(oauth2_scheme)):
+    if cookie_is_none(auth_token):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
-    valid_email = await ModelUser.check_cookie(AUTH_TOKEN)
+    valid_email = await ModelUser.check_cookie(auth_token)
     if not valid_email:
         # user is not authorized
         raise HTTPException(status.HTTP_401_UNAUTHORIZED)
@@ -114,10 +112,10 @@ async def get_cars(AUTH_TOKEN: Optional[str] = Cookie(None)):
         },
     },
 )
-async def delete_car(car_id: int, AUTH_TOKEN: Optional[str] = Cookie(None)):
-    if cookie_is_none(AUTH_TOKEN):
+async def delete_car(car_id: int, auth_token: str = Depends(oauth2_scheme)):
+    if cookie_is_none(auth_token):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
-    valid_email = await ModelUser.check_cookie(AUTH_TOKEN)
+    valid_email = await ModelUser.check_cookie(auth_token)
     if not valid_email:
         # user is not authorized
         raise HTTPException(status.HTTP_401_UNAUTHORIZED)
@@ -135,10 +133,10 @@ async def delete_car(car_id: int, AUTH_TOKEN: Optional[str] = Cookie(None)):
 
 
 # @router.get("/{car_id}", response_model=OutputCar)
-async def get_saved_car(car_id: int, AUTH_TOKEN: Optional[str] = Cookie(None)):
-    if cookie_is_none(AUTH_TOKEN):
+async def get_saved_car(car_id: int, auth_token: str = Depends(oauth2_scheme)):
+    if cookie_is_none(auth_token):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
-    valid_email = await ModelUser.check_cookie(AUTH_TOKEN)
+    valid_email = await ModelUser.check_cookie(auth_token)
     if not valid_email:
         # user is not authorized
         raise HTTPException(status.HTTP_401_UNAUTHORIZED)

@@ -1,10 +1,10 @@
-from typing import Optional
+from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi.security import OAuth2PasswordRequestForm
 
-from fastapi import APIRouter, Cookie, HTTPException, Response, status
-
-from app.core.security import create_access_code, verified_email, cookie_is_none
+from app.core.security import (cookie_is_none, create_access_code,
+                               oauth2_scheme, verified_email)
 from app.models.user import User as ModelUser
-from app.schemas.user import User, AuthData
+from app.schemas.user import User
 from app.utils import send_link_to_email
 
 router = APIRouter()
@@ -84,21 +84,14 @@ async def get_login_code(user: User):
         },
     },
 )
-async def activate_login_link(login_code: AuthData):
-    email = await ModelUser.validate_magic_link(login_code.dict()["login_code"])
+async def activate_login_link(form_data: OAuth2PasswordRequestForm = Depends()):
+    email = await ModelUser.validate_magic_link(form_data.password)
     if email:
         await ModelUser.delete_magic_link(email)
         cookie, _ = create_access_code(email)
         try:
             await ModelUser.set_cookie(email, cookie)
-            response = Response(status_code=status.HTTP_204_NO_CONTENT)
-            response.set_cookie(
-                key="AUTH_TOKEN",
-                value=cookie,
-                max_age=43200,
-                expires=43200,
-            )
-            return response
+            return {"token_type": "Bearer", "access_token": cookie}
         except e:
             return Response(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
     else:
@@ -125,11 +118,10 @@ async def activate_login_link(login_code: AuthData):
         },
     },
 )
-async def get_user_info(AUTH_TOKEN: Optional[str] = Cookie(None)):
-    if cookie_is_none(AUTH_TOKEN):
+async def get_user_info(auth_token: str = Depends(oauth2_scheme)):
+    if cookie_is_none(auth_token):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
-    valid_email = await ModelUser.check_cookie(AUTH_TOKEN)
-    print(valid_email)
+    valid_email = await ModelUser.check_cookie(auth_token)
     if not valid_email:
         # user is not authorized
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
@@ -147,16 +139,15 @@ async def get_user_info(AUTH_TOKEN: Optional[str] = Cookie(None)):
         },
     },
 )
-async def logout(AUTH_TOKEN: Optional[str] = Cookie(default=None)):
-    if cookie_is_none(AUTH_TOKEN):
+async def logout(auth_token: str = Depends(oauth2_scheme)):
+    if cookie_is_none(auth_token):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
-    valid_email = await ModelUser.check_cookie(AUTH_TOKEN)
+    valid_email = await ModelUser.check_cookie(auth_token)
     if not valid_email:
         # user is not authorized
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
-    await ModelUser.delete_cookie(AUTH_TOKEN)
+    await ModelUser.delete_cookie(auth_token)
     response = Response(status_code=status.HTTP_204_NO_CONTENT)
-    response.delete_cookie(key="AUTH_TOKEN")
     return response
 
 
