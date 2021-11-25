@@ -61,23 +61,33 @@ paths:
         - Authorization
       requestBody:
         content:
-          application/json:
+          multipart/form-data:
             schema:
               type: object
               properties:
-                login_code:
+                username:
+                  description: Empty string. Needed for compliance with OAuth2.
+                  type: string
+                password:
+                  description: The login code to activate.
                   type: string
               required:
-                - login_code
+                - username
+                - password
       responses:
-        '204':
-          description: Authorization successful.
-          headers:
-            Set-Cookie:
-              description: Authorization token.
+        '200':
+          description: Authorization token returned successfully.
+          content:
+            application/json:
               schema:
-                type: string
-                example: AUTH_TOKEN=<token-value>; Path=/; HttpOnly
+                type: object
+                properties:
+                  token_type:
+                    type: string
+                  access_token:
+                    type: string
+                required:
+                  - access_token
         '404':
           description: The link doesn't exist or isn't valid anymore.
 
@@ -88,7 +98,7 @@ paths:
       tags:
         - Authorization
       security:
-        - cookieAuth: []
+        - bearerAuth: []
       responses:
         '200':
           description: User information returned successfully.
@@ -138,7 +148,7 @@ paths:
       tags:
         - Booking
       security:
-        - cookieAuth: []
+        - bearerAuth: []
       responses:
         '200':
           description: A listing of parking spaces is obtained successfully.
@@ -176,7 +186,7 @@ paths:
       tags:
         - Booking
       security:
-        - cookieAuth: []
+        - bearerAuth: []
       requestBody:
         content:
           application/json:
@@ -205,7 +215,7 @@ paths:
       tags:
         - Booking
       security:
-        - cookieAuth: []
+        - bearerAuth: []
       requestBody:
         content:
           application/json:
@@ -237,7 +247,7 @@ paths:
       tags:
         - Car Management
       security:
-        - cookieAuth: []
+        - bearerAuth: []
       responses:
         '200':
           description: Listing of all added cars of a user.
@@ -256,7 +266,7 @@ paths:
       tags:
         - Car Management
       security:
-        - cookieAuth: []
+        - bearerAuth: []
       requestBody:
         content:
           application/json:
@@ -287,7 +297,7 @@ paths:
       tags:
         - Car Management
       security:
-        - cookieAuth: []
+        - bearerAuth: []
       responses:
         '204':
           description: Car deleted successfully.
@@ -423,7 +433,6 @@ components:
         license_number: A000AA
 
   securitySchemes:
-    cookieAuth:
-      type: apiKey
-      in: cookie
-      name: AUTH_TOKEN
+    bearerAuth:
+      type: http
+      scheme: bearer
