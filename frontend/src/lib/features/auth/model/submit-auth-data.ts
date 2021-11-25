@@ -11,12 +11,29 @@ export async function submitAuthData(email: string | undefined): Promise<void> {
   prefetch(checkMagicLinkURL);
 
   try {
-    console.log(await api.getLoginCode(email));
+    await api.requestLoginLink(email);
+    await goto(checkMagicLinkURL);
   } catch (e) {
     // TODO: add proper error handling
     console.error('Request failed, sorry', e);
     return;
   }
+}
 
-  await goto(checkMagicLinkURL);
+export async function submitAuthDataCheat(email: string | undefined): Promise<void> {
+  if (email === undefined) {
+    return;
+  }
+
+  prefetch(checkMagicLinkURL);
+
+  try {
+    const loginCode = await api.getLoginCode(email);
+    await api.activateLoginLink(loginCode);
+    await goto('/');
+  } catch (e) {
+    // TODO: add proper error handling
+    console.error('Request failed, sorry', e);
+    return;
+  }
 }

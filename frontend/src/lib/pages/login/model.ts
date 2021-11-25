@@ -10,7 +10,7 @@ export const interceptLoginCode: Load = async ({ page, fetch }) => {
     try {
       await api.with(fetch).activateLoginLink(loginCode);
       return {
-        redirect: '/cars',
+        redirect: '/',
         status: 302,
       }
     } catch (error) {

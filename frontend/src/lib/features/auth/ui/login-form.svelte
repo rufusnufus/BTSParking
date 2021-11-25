@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { submitAuthData } from '../model/submit-auth-data';
+  import { submitAuthDataCheat } from '../model/submit-auth-data';
 
   let email: string | undefined;
 </script>
@@ -7,7 +7,7 @@
 <form
   class="mt-8 space-y-6"
   method="POST"
-  on:submit|preventDefault={() => submitAuthData(email)}
+  on:submit|preventDefault={() => submitAuthDataCheat(email)}
 >
   <div class="rounded-md shadow-sm">
     <div>
