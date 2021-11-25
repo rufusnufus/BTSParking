@@ -1,17 +1,9 @@
-import fetch from 'node-fetch';
+import cookie from 'cookie';
 import type { Handle } from '@sveltejs/kit';
-import type { Options as KyOptions } from 'ky';
 
 import api from '$lib/shared/api';
 
-function buildTokenCookie(token: string) {
-  return [
-    `AUTH_TOKEN=${token}`,
-    'HttpOnly',
-    'SameSite=Strict',
-    `MaxAge=${24 * 60 * 60}`,
-  ].join('; ');
-}
+const _24hours = 24 * 60 * 60;
 
 export const interceptLoginCode: Handle = async ({ request, resolve }) => {
   if (request.path !== '/login') {
@@ -24,15 +16,17 @@ export const interceptLoginCode: Handle = async ({ request, resolve }) => {
   }
 
   try {
-    const token = (
-      await api.with(fetch as KyOptions['fetch']).activateLoginLink(code)
-    ).access_token;
+    const token = (await api.with(fetch).activateLoginLink(code)).access_token;
     const response = await resolve(request);
     return {
       ...response,
       headers: {
         ...response.headers,
-        'Set-Cookie': buildTokenCookie(token),
+        'Set-Cookie': cookie.serialize('AUTH_TOKEN', token, {
+          httpOnly: true,
+          sameSite: 'strict',
+          maxAge: _24hours,
+        }),
       },
     };
   } catch (e) {
