@@ -53,9 +53,9 @@ paths:
         '400':
           description: The provided e-mail is invalid.
 
-  /activate-login-link:
+  /activate-login-code:
     post:
-      operationId: activateLoginLink
+      operationId: activateLoginCode
       summary: Perform authorization by a given one-time login code.
       tags:
         - Authorization
@@ -80,14 +80,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  token_type:
-                    type: string
-                  access_token:
-                    type: string
-                required:
-                  - access_token
+                $ref: '#/components/schemas/TokenResponse'
         '404':
           description: The link doesn't exist or isn't valid anymore.
 
@@ -108,7 +101,7 @@ paths:
       operationId: getGlobalMap
       summary: Get the properties and objects of the global map of the parking lot.
       security:
-        - bearerAuth: []
+        - tokenAuth: []
       tags:
         - Booking
       responses:
@@ -128,7 +121,7 @@ paths:
       tags:
         - Booking
       security:
-        - bearerAuth: []
+        - tokenAuth: []
       responses:
         '200':
           description: A map of the zone with occupants is returned successfully.
@@ -150,7 +143,7 @@ paths:
       tags:
         - Booking
       security:
-        - bearerAuth: []
+        - tokenAuth: []
       responses:
         '200':
           description: A map of the zone with user's own cars is returned successfully.
@@ -170,7 +163,7 @@ paths:
       tags:
         - Booking
       security:
-        - bearerAuth: []
+        - tokenAuth: []
       requestBody:
         content:
           application/json:
@@ -193,7 +186,7 @@ paths:
       tags:
         - Car Management
       security:
-        - bearerAuth: []
+        - tokenAuth: []
       responses:
         '200':
           description: Listing of all added cars of a user.
@@ -212,7 +205,7 @@ paths:
       tags:
         - Car Management
       security:
-        - bearerAuth: []
+        - tokenAuth: []
       requestBody:
         content:
           application/json:
@@ -243,7 +236,7 @@ paths:
       tags:
         - Car Management
       security:
-        - bearerAuth: []
+        - tokenAuth: []
       responses:
         '204':
           description: Car deleted successfully.
@@ -283,9 +276,9 @@ components:
         - end
       properties:
         start:
-          $ref: '#/compnoents/schemas/Point'
+          $ref: '#/components/schemas/Point'
         end:
-          $ref: '#/compnoents/schemas/Point'
+          $ref: '#/components/schemas/Point'
       example:
         start:
           x: 0
@@ -459,17 +452,41 @@ components:
 
     User:
       type: object
+      required:
+        - email
       properties:
         email:
           type: string
         is_admin:
           type: boolean
           readOnly: true
-      required:
-        - email
       example:
         email: "user@example.com"
         is_admin: false
+
+    TokenResponse:
+      type: object
+      required:
+        - token_type
+        - access_token
+        - expires_in
+        - user_info
+      properties:
+        token_type:
+          type: string
+        access_token:
+          type: string
+        expires_in:
+          type: integer
+        user_info:
+          $ref: '#/components/schemas/User'
+      example:
+        token_type: Bearer
+        access_token: "<token>"
+        expires_in: 86400
+        user_info:
+          email: "user@example.com"
+          is_admin: false
 
     Car:
       type: object
@@ -491,6 +508,9 @@ components:
         license_number: A000AA
 
   securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
+    tokenAuth:
+      type: oauth2
+      flows:
+        password:
+          tokenUrl: /api/v1/activate-login-code
+          scopes: {}
