@@ -8,10 +8,16 @@ import { NavDropdown } from '$lib/features/top-level-nav'
 
 type HeaderActionComponent = typeof SvelteComponent;
 
+const noHeaderActionPages = [
+  '/',
+  '/login',
+  '/check-magic-link',
+]
+
 export const headerAction: Readable<HeaderActionComponent | null> = derived(
   [page, session],
   ([$page, $session]) => {
-    if ($page.path === '/check-magic-link') {
+    if (noHeaderActionPages.includes($page.path)) {
       return null;
     }
 
