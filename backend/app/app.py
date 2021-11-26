@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from prometheus_fastapi_instrumentator import Instrumentator
 
 from app.api.api_v1 import api
 from app.db import db
@@ -17,6 +18,19 @@ app.add_middleware(
 )
 
 app.include_router(api.router)
+
+
+instrumentator = Instrumentator(
+    should_group_status_codes=False,
+    should_ignore_untemplated=True,
+    should_instrument_requests_inprogress=True,
+    excluded_handlers=["/metrics"],
+    inprogress_name="inprogress",
+    inprogress_labels=True,
+)
+
+instrumentator.instrument(app)
+instrumentator.expose(app, include_in_schema=False, should_gzip=True)
 
 
 @app.on_event("startup")

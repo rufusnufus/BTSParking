@@ -1,5 +1,25 @@
 version: "3"
 
+x-logging:
+  &default-logging
+  options:
+    tag: "{{ .ImageName }}|{{ .Name }}"
+    max-size: '100m'
+    max-file: '3'
+  driver: json-file
+
+x-resources:
+  &default-resources
+  cpus: 0.3
+  mem_limit: 500M
+
+x-custom:
+  &default-set
+  logging: *default-logging
+  networks:
+    - parking
+  <<: *default-resources
+
 services:
   db:
     image: postgres:14.0-alpine3.14
@@ -12,6 +32,7 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=postgres
+    <<: *default-set
 
   pgadmin:
     container_name: pgadmin
@@ -23,6 +44,7 @@ services:
       - "5050:80"
     depends_on:
       - db
+    <<: *default-set
 
   backend:
     build:
@@ -36,6 +58,7 @@ services:
       - "8000:8000"
     depends_on:
       - db
+    <<: *default-set
 
   frontend:
     build:
@@ -46,6 +69,29 @@ services:
       - "80:3000"
     environment:
       BACKEND_PREFIX_URL: http://backend
+    <<: *default-set
+  
+  grafana:
+    image: grafana/grafana:8.1.3
+    container_name: monitoring-grafana
+    ports:
+      - "3000:3000"
+    <<: *default-set
+
+  prometheus:
+    image: prom/prometheus:v2.29.2
+    container_name: monitoring-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    command: --config.file=/etc/prometheus/prometheus.yml
+    <<: *default-set
 
 volumes:
   postgres_data:
+  prometheus-data:
+
+networks:
+  parking:
