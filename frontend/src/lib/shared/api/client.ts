@@ -1,4 +1,5 @@
 import ky from 'ky';
+import FormData from 'form-data';
 import type { Options as KyOptions } from 'ky';
 
 import type { Car, FreeSpace, Space, AuthToken } from './entities';
@@ -46,7 +47,7 @@ class API {
   /** Perform authorization by a given one-time login code. */
   activateLoginLink(loginCode: string): Promise<AuthToken> {
     const formData = new FormData();
-    formData.append('username', '');
+    formData.append('username', 'None');
     formData.append('password', loginCode);
 
     return this.apiClient.post('activate-login-link', { body: formData }).json();

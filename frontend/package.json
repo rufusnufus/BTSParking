@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "cookie": "^0.4.1",
+    "form-data": "^4.0.0",
     "ky": "^0.28.6"
   },
   "devDependencies": {
