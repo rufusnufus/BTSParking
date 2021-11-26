@@ -21,6 +21,7 @@ autoflake = "^1.4"
 ormar = "^0.10.22"
 alembic = "^1.7.5"
 prometheus-fastapi-instrumentator = "^5.7.1"
+mypy = "^0.910"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^4.0.1"

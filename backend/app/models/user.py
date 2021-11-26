@@ -1,6 +1,6 @@
 import time
 
-from sqlalchemy import Boolean, Column, Float, String, Table, and_, select
+from sqlalchemy import Boolean, Column, Float, String, Table, and_
 
 from app.db import db, metadata
 
