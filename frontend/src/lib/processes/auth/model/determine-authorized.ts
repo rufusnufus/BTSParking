@@ -7,10 +7,9 @@ import type { GetSession } from '@sveltejs/kit';
  * Populates the `session` object with the `token` field.
  */
 export const determineAuthorized: GetSession = request => {
-  const cookies = cookie.parse(request.headers['Cookie'] ?? '');
+  const cookies = cookie.parse(request.headers['cookie'] ?? '');
 
   return {
-    // token: cookies['AUTH_TOKEN'],
-    token: '<token>'
+    token: cookies['AUTH_TOKEN'],
   };
 };

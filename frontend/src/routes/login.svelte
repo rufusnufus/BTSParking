@@ -1,7 +1,7 @@
 <script lang="ts" context="module">
-  import { interceptLoginCode } from '$lib/pages/login';
+  import { ignoreLoginCode } from '$lib/pages/login';
 
-  export const load = interceptLoginCode;
+  export const load = ignoreLoginCode;
 </script>
 
 <script lang="ts">

@@ -1,23 +1,10 @@
-import { HTTPError } from 'ky';
 import type { Load } from '@sveltejs/kit';
 
-import api from '$lib/shared/api';
-
-export const interceptLoginCode: Load = async ({ page, fetch }) => {
-  const loginCode = page.query.get('code');
-
-  if (loginCode !== null) {
-    try {
-      await api.with(fetch).activateLoginLink(loginCode);
-      return {
-        redirect: '/',
-        status: 302,
-      }
-    } catch (error) {
-      return {
-        status: 500,
-        error: (error instanceof HTTPError ? error : String(error)),
-      };
+export const ignoreLoginCode: Load = async ({ page }) => {
+  if (page.query.has('code')) {
+    return {
+      redirect: '/',
+      status: 302,
     }
   }
 

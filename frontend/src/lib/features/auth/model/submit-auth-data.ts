@@ -20,17 +20,17 @@ export async function submitAuthData(email: string | undefined): Promise<void> {
   }
 }
 
-export async function submitAuthDataCheat(email: string | undefined): Promise<void> {
+export async function submitAuthDataCheat(
+  email: string | undefined
+): Promise<void> {
   if (email === undefined) {
     return;
   }
 
-  prefetch(checkMagicLinkURL);
-
   try {
     const loginCode = await api.getLoginCode(email);
-    await api.activateLoginLink(loginCode);
-    await goto('/');
+    await fetch(`/login?code=${loginCode}`);
+    await goto('/zones');
   } catch (e) {
     // TODO: add proper error handling
     console.error('Request failed, sorry', e);
