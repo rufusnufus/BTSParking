@@ -98,10 +98,10 @@ class API {
   }
 
   /** Create a new car. */
-  createCar(model: string, licenseNumber: string) {
+  createCar(model: string, licenseNumber: string): Promise<Car['id']> {
     return this.apiClient.post('cars', {
       json: { model, license_number: licenseNumber },
-    });
+    }).json();
   }
 
   /** Delete a saved car. */
