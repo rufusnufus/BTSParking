@@ -284,7 +284,7 @@ paths:
                 type: object
                 properties:
                   id:
-                    $ref: '#/components/schemas/Car'
+                    $ref: '#/components/schemas/Car/properties/id'
                 required:
                   - id
         '401':
