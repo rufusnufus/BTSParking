@@ -17,12 +17,6 @@ users = Table(
 
 class User:
     @classmethod
-    async def get_info(cls, email):
-        query = select(users.c.email, users.c.is_admin).where(users.c.email == email)
-        user = await db.fetch_one(query)
-        return user
-
-    @classmethod
     async def is_admin(cls, email):
         query = users.select(users.c.is_admin).where(
             and_(users.c.email == email, users.c.is_admin == True)

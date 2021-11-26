@@ -98,37 +98,6 @@ async def activate_login_link(form_data: OAuth2PasswordRequestForm = Depends()):
         return Response(status_code=status.HTTP_404_NOT_FOUND)
 
 
-@router.get(
-    "/me",
-    summary="Return the information about the currently logged in user",
-    status_code=status.HTTP_200_OK,
-    responses={
-        status.HTTP_200_OK: {
-            "description": "User information returned successfully.",
-            "content": {
-                "application/json": {
-                    "examples": {
-                        "user-info": {
-                            "summary": "user-info",
-                            "value": {"email": "user@example.com", "is_admin": False},
-                        },
-                    }
-                }
-            },
-        },
-    },
-)
-async def get_user_info(auth_token: str = Depends(oauth2_scheme)):
-    if cookie_is_none(auth_token):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
-    valid_email = await ModelUser.check_cookie(auth_token)
-    if not valid_email:
-        # user is not authorized
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
-    user = await ModelUser.get_info(valid_email)
-    return user
-
-
 @router.post(
     "/logout",
     summary="Terminate a user's session",
