@@ -58,9 +58,7 @@ async def get_map(auth_token: str = Depends(oauth2_scheme)):
         # user is not authorized
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     cars = await ModelCar.get_all(valid_email)
-    logger.info(f"function: get_map, cars={cars}")
     zones = await Zone.get_zones()
-    logger.info(f"function: get_map, zones={zones}")
     json_zones = []
     for zone in zones:
         json_zone = jsonable_encoder(zone)

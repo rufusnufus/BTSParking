@@ -27,7 +27,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data/
+      - postgres-data:/var/lib/postgresql/data/
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
@@ -90,7 +90,7 @@ services:
     <<: *default-set
   
   loki:
-    image: grafana/loki:${LOKI_TAG}
+    image: grafana/loki:2.3.0
     container_name: monitoring-loki
     ports:
       - "3100:3100"
@@ -100,7 +100,7 @@ services:
     <<: *default-set
 
   promtail:
-    image: grafana/promtail:${PROMTAIL_TAG}
+    image: grafana/promtail:2.3.0
     container_name: monitoring-promtail
     ports:
       - "9080:9080"
@@ -112,7 +112,8 @@ services:
     <<: *default-set
 
 volumes:
-  postgres_data:
+  grafana-data:
+  postgres-data:
   prometheus-data:
   loki-data:
   promtail-data:

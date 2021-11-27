@@ -23,6 +23,7 @@ router = APIRouter()
     },
 )
 async def send_login_link(user: User):
+    logger.info(f"function: send_login_link, params: {user}")
     email = user.dict()["email"]
     if not verified_email(email):
         return Response(status_code=status.HTTP_400_BAD_REQUEST)
@@ -31,10 +32,13 @@ async def send_login_link(user: User):
     if not user_exists:
         await ModelUser.create(**user.dict(), is_admin=False)
 
-    login_code, code_expire_time = create_access_code(email, 60 * 5)
-    magic_link = f"http://127.0.0.1:80/login?code={login_code}"
+    code, code_expire_time = create_access_code(email, 60 * 5)
+    logger.debug(
+        f"function: send_login_link, code: {code}, code_expire_time: {code_expire_time}"
+    )
+    magic_link = f"http://127.0.0.1:80/login?code={code}"
 
-    await ModelUser.set_magic_link(email, login_code, code_expire_time)
+    await ModelUser.set_magic_link(email, code, code_expire_time)
 
     status_code = send_link_to_email(email, magic_link)
     if status_code == 202:
