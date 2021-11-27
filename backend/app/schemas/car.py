@@ -13,3 +13,12 @@ class OutputCar(BaseModel):
     id: int
     model: str
     license_number: str
+
+class Booking(BaseModel):
+    occupying_car: OutputCar
+    space_id: int
+    booked_from: str
+    booked_until: str
+
+    class Config:
+        orm_mode = True

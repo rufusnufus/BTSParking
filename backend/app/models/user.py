@@ -1,6 +1,6 @@
 import time
 
-from sqlalchemy import Boolean, Column, Float, String, Table, and_
+from sqlalchemy import Boolean, Column, Float, String, Table, and_, select
 
 from app.db import db, metadata
 
@@ -11,11 +11,18 @@ users = Table(
     Column("token", String(64), index=True),
     Column("token_expire_time", Float),
     Column("cookie", String(256), index=True),
+    Column("cookie_expire_time", Float),
     Column("is_admin", Boolean, default=False, nullable=False),
 )
 
 
 class User:
+    @classmethod
+    async def get_info(cls, email):
+        query = select(users.c.email, users.c.is_admin).where(users.c.email == email)
+        user = await db.fetch_one(query)
+        return user
+    
     @classmethod
     async def is_admin(cls, email):
         query = users.select(users.c.is_admin).where(
@@ -73,12 +80,13 @@ class User:
         return user
 
     @classmethod
-    async def set_cookie(cls, email, cookie):
+    async def set_cookie(cls, email, cookie, cookie_expire_time):
         query = (
             users.update()
             .where(users.c.email == email)
             .values(
                 cookie=cookie,
+                cookie_expire_time=cookie_expire_time,
             )
         )
         user = await db.execute(query)
@@ -89,11 +97,12 @@ class User:
         query = users.select().where(users.c.cookie == cookie)
         user = await db.fetch_one(query)
         if user:
-            return dict(user)["email"]
+            if time.time() < dict(user)["cookie_expire_time"]:
+                return dict(user)["email"]
         return None
 
     @classmethod
     async def delete_cookie(cls, cookie):
-        query = users.update().where(users.c.cookie == cookie).values(cookie=None)
+        query = users.update().where(users.c.cookie == cookie).values(cookie=None, cookie_expire_time=None)
         email = await db.execute(query)
         return email
