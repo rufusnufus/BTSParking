@@ -4,11 +4,12 @@ from fastapi import APIRouter, Body, Depends, HTTPException, Response, status
 from fastapi.encoders import jsonable_encoder
 
 from app.core.security import cookie_is_none, oauth2_scheme
+from app.logs import logger
 from app.models.car import Car as ModelCar
+from app.models.road import Road
 from app.models.space import Space
 from app.models.user import User as ModelUser
 from app.models.zone import Zone
-from app.models.road import Road
 from app.schemas.car import Booking
 
 router = APIRouter(
@@ -46,41 +47,29 @@ router = APIRouter(
                                         "number": 1,
                                         "free": False,
                                         "type": "space",
-                                        "start": {
-                                            "x": 1,
-                                            "y": 1
-                                        },
-                                        "end": {
-                                            "x": 13,
-                                            "y": 23
-                                        },
+                                        "start": {"x": 1, "y": 1},
+                                        "end": {"x": 13, "y": 23},
                                         "booking": {
                                             "occupying_car": {
-                                            "id": 2,
-                                            "email": "rufusnufus@gmail.com",
-                                            "model": "Volkswagen Touareg",
-                                            "license_number": "A000AA"
+                                                "id": 2,
+                                                "email": "rufusnufus@gmail.com",
+                                                "model": "Volkswagen Touareg",
+                                                "license_number": "A000AA",
                                             },
                                             "space_id": 1,
                                             "booked_from": "2021-11-27T14:44:10.765514",
-                                            "booked_until": "2021-11-27T14:47:00"
-                                        }
+                                            "booked_until": "2021-11-27T14:47:00",
+                                        },
                                     },
                                     {
                                         "id": 2,
                                         "number": 2,
                                         "free": True,
                                         "type": "space",
-                                        "start": {
-                                            "x": 15,
-                                            "y": 1
-                                        },
-                                        "end": {
-                                            "x": 27,
-                                            "y": 23
-                                        }
+                                        "start": {"x": 15, "y": 1},
+                                        "end": {"x": 27, "y": 23},
                                     },
-                                ]
+                                ],
                             },
                         },
                     },
@@ -90,6 +79,9 @@ router = APIRouter(
     },
 )
 async def get_spaces(zone_id: int, auth_token: str = Depends(oauth2_scheme)):
+    logger.info(
+        f"function: get_spaces, params: zone_id={zone_id},auth_token={auth_token}"
+    )
     if cookie_is_none(auth_token):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     valid_email = await ModelUser.check_cookie(auth_token)
@@ -104,7 +96,7 @@ async def get_spaces(zone_id: int, auth_token: str = Depends(oauth2_scheme)):
     zone = await Zone.get_zone(id=zone_id)
     if not zone:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
-    
+
     width, height = await Zone.get_width_height(id=zone_id)
 
     spaces = await Space.get_booked_spaces(zone_id)
@@ -127,9 +119,9 @@ async def get_spaces(zone_id: int, auth_token: str = Depends(oauth2_scheme)):
         end_x = json_space.pop("end_x", None)
         end_y = json_space.pop("end_y", None)
         json_space["end"] = {"x": end_x, "y": end_y}
-        
+
         booked_from = json_space.pop("booked_from", None)
-        booked_until =json_space.pop("booked_until", None)
+        booked_until = json_space.pop("booked_until", None)
         json_space["booking"] = {
             "occupying_car": occupying_car,
             "space_id": json_space["id"],
@@ -137,7 +129,7 @@ async def get_spaces(zone_id: int, auth_token: str = Depends(oauth2_scheme)):
             "booked_until": booked_until,
         }
         json_spaces.append(json_space)
-    
+
     free_spaces = await Space.get_free_spaces(zone_id)
     json_free_spaces = []
     for free_space in free_spaces:
@@ -161,7 +153,7 @@ async def get_spaces(zone_id: int, auth_token: str = Depends(oauth2_scheme)):
         json_free_space.pop("booked_until", None)
 
         json_free_spaces.append(json_free_space)
-    
+
     roads = await Road.get_roads(zone_id)
     json_roads = []
     for road in roads:
@@ -181,7 +173,11 @@ async def get_spaces(zone_id: int, auth_token: str = Depends(oauth2_scheme)):
         json_road["end"] = {"x": end_x, "y": end_y}
 
         json_roads.append(json_road)
-    return {"width": width, "height": height, "objects": json_spaces + json_free_spaces + json_roads}
+    return {
+        "width": width,
+        "height": height,
+        "objects": json_spaces + json_free_spaces + json_roads,
+    }
 
 
 @router.get(
@@ -205,24 +201,18 @@ async def get_spaces(zone_id: int, auth_token: str = Depends(oauth2_scheme)):
                                         "number": 1,
                                         "free": False,
                                         "type": "space",
-                                        "start": {
-                                            "x": 1,
-                                            "y": 1
-                                        },
-                                        "end": {
-                                            "x": 13,
-                                            "y": 23
-                                        },
+                                        "start": {"x": 1, "y": 1},
+                                        "end": {"x": 13, "y": 23},
                                         "booking": {
                                             "occupying_car": {
-                                            "id": 1,
-                                            "email": "example@gmail.com",
-                                            "model": "Volkswagen Touareg",
-                                            "license_number": "A000AA"
+                                                "id": 1,
+                                                "email": "example@gmail.com",
+                                                "model": "Volkswagen Touareg",
+                                                "license_number": "A000AA",
                                             },
                                             "space_id": 1,
                                             "booked_from": "2021-11-27T14:34:44.529553",
-                                            "booked_until": "2021-11-27T14:36:00"
+                                            "booked_until": "2021-11-27T14:36:00",
                                         },
                                     },
                                 ],
@@ -235,6 +225,9 @@ async def get_spaces(zone_id: int, auth_token: str = Depends(oauth2_scheme)):
     },
 )
 async def get_own_spaces(zone_id: int, auth_token: str = Depends(oauth2_scheme)):
+    logger.info(
+        f"function: get_own_spaces, params: zone_id={zone_id},auth_token={auth_token}"
+    )
     valid_email = await ModelUser.check_cookie(auth_token)
     if not valid_email:
         # user is not authorized
@@ -243,14 +236,16 @@ async def get_own_spaces(zone_id: int, auth_token: str = Depends(oauth2_scheme))
     zone = await Zone.get_zone(id=zone_id)
     if not zone:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
-    
+
     width, height = await Zone.get_width_height(id=zone_id)
 
     cars = await ModelCar.get_all(valid_email)
     own_booked_spaces = []
     for car in cars:
         curr_car = jsonable_encoder(car)
-        curr_car_booked_spaces = await Space.get_own_booked_spaces(zone_id=zone_id, car_id=curr_car["id"])
+        curr_car_booked_spaces = await Space.get_own_booked_spaces(
+            zone_id=zone_id, car_id=curr_car["id"]
+        )
         for booked_space in curr_car_booked_spaces:
             json_booked_space = jsonable_encoder(booked_space)
             json_booked_space["free"] = False
@@ -268,9 +263,9 @@ async def get_own_spaces(zone_id: int, auth_token: str = Depends(oauth2_scheme))
             end_x = json_booked_space.pop("end_x", None)
             end_y = json_booked_space.pop("end_y", None)
             json_booked_space["end"] = {"x": end_x, "y": end_y}
-            
+
             booked_from = json_booked_space.pop("booked_from", None)
-            booked_until =json_booked_space.pop("booked_until", None)
+            booked_until = json_booked_space.pop("booked_until", None)
             json_booked_space["booking"] = {
                 "occupying_car": occupying_car,
                 "space_id": json_booked_space["id"],
@@ -295,23 +290,29 @@ async def get_own_spaces(zone_id: int, auth_token: str = Depends(oauth2_scheme))
 )
 async def book_space(
     zone_id: int,
-    space: Booking = Body(..., examples={
-        "booking_example": {
-            "summary": "booking_example",
-            "value": {
-                "occupying_car": {
-                    "id": 1,
-                    "model": "Volkswagen Touareg",
-                    "license_number": "A000AA"
+    space: Booking = Body(
+        ...,
+        examples={
+            "booking_example": {
+                "summary": "booking_example",
+                "value": {
+                    "occupying_car": {
+                        "id": 1,
+                        "model": "Volkswagen Touareg",
+                        "license_number": "A000AA",
+                    },
+                    "space_id": 3,
+                    "booked_from": "2021-11-01T18:00Z",
+                    "booked_until": "2021-11-01T20:00Z",
                 },
-                "space_id": 3,
-                "booked_from": "2021-11-01T18:00Z",
-                "booked_until": "2021-11-01T20:00Z"
             }
-        }
-    }),
+        },
+    ),
     auth_token: str = Depends(oauth2_scheme),
 ):
+    logger.info(
+        f"function: book_space, params: zone_id={zone_id}, space={space}, auth_token={auth_token}"
+    )
     if cookie_is_none(auth_token):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     valid_email = await ModelUser.check_cookie(auth_token)
@@ -328,12 +329,14 @@ async def book_space(
         return Response(status_code=status.HTTP_306_RESERVED)
 
     booked_space = await Space.book_space(
-        car_id=space.occupying_car.id, space_id=space.space_id, zone_id=zone_id, 
-        booked_from=datetime.datetime.now(), booked_until=datetime.datetime.strptime(space.booked_until, "%Y-%m-%dT%H:%MZ")
+        car_id=space.occupying_car.id,
+        space_id=space.space_id,
+        zone_id=zone_id,
+        booked_from=datetime.datetime.now(),
+        booked_until=datetime.datetime.strptime(space.booked_until, "%Y-%m-%dT%H:%MZ"),
     )
 
     if booked_space:
         return Response(status_code=status.HTTP_204_NO_CONTENT)
     else:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
-

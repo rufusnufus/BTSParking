@@ -1,6 +1,6 @@
 from fastapi import APIRouter, status
 
-from app.api.api_v1.endpoints import authorization, cars, zones, maps
+from app.api.api_v1.endpoints import authorization, cars, maps, zones
 
 router = APIRouter(
     prefix="/api/v1",

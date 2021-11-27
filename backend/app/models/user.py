@@ -22,7 +22,7 @@ class User:
         query = select(users.c.email, users.c.is_admin).where(users.c.email == email)
         user = await db.fetch_one(query)
         return user
-    
+
     @classmethod
     async def is_admin(cls, email):
         query = users.select(users.c.is_admin).where(
@@ -103,6 +103,10 @@ class User:
 
     @classmethod
     async def delete_cookie(cls, cookie):
-        query = users.update().where(users.c.cookie == cookie).values(cookie=None, cookie_expire_time=None)
+        query = (
+            users.update()
+            .where(users.c.cookie == cookie)
+            .values(cookie=None, cookie_expire_time=None)
+        )
         email = await db.execute(query)
         return email

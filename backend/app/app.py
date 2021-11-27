@@ -4,6 +4,7 @@ from prometheus_fastapi_instrumentator import Instrumentator
 
 from app.api.api_v1 import api
 from app.db import db
+from app.logs import logger
 
 app = FastAPI(title="Async FastAPI")
 
@@ -36,8 +37,10 @@ instrumentator.expose(app, include_in_schema=False, should_gzip=True)
 @app.on_event("startup")
 async def startup():
     await db.connect()
+    logger.info("PostgreSQL DB is connected")
 
 
 @app.on_event("shutdown")
 async def shutdown():
     await db.disconnect()
+    logger.info("PostgreSQL DB is disconnected")

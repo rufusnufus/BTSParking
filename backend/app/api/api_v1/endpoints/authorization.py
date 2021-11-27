@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from fastapi.security import OAuth2PasswordRequestForm
 
-from app.core.security import (cookie_is_none, create_access_code,
-                               oauth2_scheme, verified_email)
+from app.core.security import create_access_code, oauth2_scheme, verified_email
+from app.logs import logger
 from app.models.user import User as ModelUser
 from app.schemas.user import User
 from app.utils import send_link_to_email
@@ -31,7 +31,7 @@ async def send_login_link(user: User):
     if not user_exists:
         await ModelUser.create(**user.dict(), is_admin=False)
 
-    login_code, code_expire_time = create_access_code(email, 60*5)
+    login_code, code_expire_time = create_access_code(email, 60 * 5)
     magic_link = f"http://127.0.0.1:80/login?code={login_code}"
 
     await ModelUser.set_magic_link(email, login_code, code_expire_time)
@@ -63,16 +63,20 @@ async def send_login_link(user: User):
     },
 )
 async def get_login_code(user: User):
+    logger.info(f"function: get_login_code, params: {user}")
     user_exists = await ModelUser.get(**user.dict())
 
     if not user_exists:
         await ModelUser.create(**user.dict(), is_admin=False)
 
     email = user.dict()["email"]
-    login_code, code_expire_time = create_access_code(email, 60*5)
+    code, code_expire_time = create_access_code(email, 60 * 5)
+    logger.debug(
+        f"function: get_login_code, login_code: {code}, code_expire_time: {code_expire_time}"
+    )
 
-    await ModelUser.set_magic_link(email, login_code, code_expire_time)
-    return login_code
+    await ModelUser.set_magic_link(email, code, code_expire_time)
+    return code
 
 
 @router.post(
@@ -106,15 +110,26 @@ async def get_login_code(user: User):
     },
 )
 async def activate_login_code(form_data: OAuth2PasswordRequestForm = Depends()):
+    logger.info(
+        f"function: activate_login_code, params: username={form_data.username}, password={form_data.password}"
+    )
     email = await ModelUser.validate_magic_link(form_data.password)
     if email:
         await ModelUser.delete_magic_link(email)
         cookie, expires_in = create_access_code(email, 86400)
+        logger.debug(
+            f"function: activate_login_code, cookie: {cookie}, expires_in: {expires_in}"
+        )
         user_info = await ModelUser.get_info(email)
         try:
             await ModelUser.set_cookie(email, cookie, expires_in)
-            return {"token_type": "Bearer", "access_token": cookie, "expires_in": 86400, "user_info": user_info}
-        except e:
+            return {
+                "token_type": "Bearer",
+                "access_token": cookie,
+                "expires_in": 86400,
+                "user_info": user_info,
+            }
+        except Exception:
             return Response(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
     else:
         return Response(status_code=status.HTTP_404_NOT_FOUND)
@@ -131,8 +146,7 @@ async def activate_login_code(form_data: OAuth2PasswordRequestForm = Depends()):
     },
 )
 async def logout(auth_token: str = Depends(oauth2_scheme)):
-    if cookie_is_none(auth_token):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+    logger.info(f"function: logout, params: auth_token={auth_token}")
     valid_email = await ModelUser.check_cookie(auth_token)
     if not valid_email:
         # user is not authorized
