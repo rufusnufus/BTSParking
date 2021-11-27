@@ -278,7 +278,6 @@ async def get_own_spaces(zone_id: int, auth_token: str = Depends(oauth2_scheme))
                 "booked_until": booked_until,
             }
             own_booked_spaces.append(json_booked_space)
-        # own_booked_spaces += jsonable_encoder(curr_car_booked_spaces)
     return {"width": width, "height": height, "objects": own_booked_spaces}
 
 
