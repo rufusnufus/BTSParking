@@ -12,9 +12,9 @@ load_dotenv(os.path.join(BASE_DIR, "../.env"))
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/v1/activate-login-link")
 
 
-def create_access_code(email: str) -> tuple:
+def create_access_code(email: str, expires_in: int) -> tuple:
     link_create_time = time.time()
-    link_expire_time = time.time() + 60 * 5
+    link_expire_time = time.time() + expires_in
     user_data = f"{email}{link_create_time}"
     login_code = sha256(user_data.encode("utf-8")).hexdigest()
     return (login_code, link_expire_time)

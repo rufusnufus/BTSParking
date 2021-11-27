@@ -31,7 +31,7 @@ async def send_login_link(user: User):
     if not user_exists:
         await ModelUser.create(**user.dict(), is_admin=False)
 
-    login_code, code_expire_time = create_access_code(email)
+    login_code, code_expire_time = create_access_code(email, 60*5)
     magic_link = f"http://127.0.0.1:80/login?code={login_code}"
 
     await ModelUser.set_magic_link(email, login_code, code_expire_time)
@@ -69,29 +69,51 @@ async def get_login_code(user: User):
         await ModelUser.create(**user.dict(), is_admin=False)
 
     email = user.dict()["email"]
-    login_code, code_expire_time = create_access_code(email)
+    login_code, code_expire_time = create_access_code(email, 60*5)
 
     await ModelUser.set_magic_link(email, login_code, code_expire_time)
     return login_code
 
 
 @router.post(
-    "/activate-login-link",
+    "/activate-login-code",
     summary="Perform authorization by a given one-time login code",
     responses={
-        status.HTTP_204_NO_CONTENT: {
-            "description": "Successful authorization.",
+        status.HTTP_200_OK: {
+            "description": "Authorization token returned successfully.",
+            "content": {
+                "application/json": {
+                    "examples": {
+                        "token-response": {
+                            "summary": "token-response",
+                            "value": {
+                                "token_type": "Bearer",
+                                "access_token": "<token>",
+                                "expires_in": 86400,
+                                "user_info": {
+                                    "email": "user@example.com",
+                                    "is_admin": False,
+                                },
+                            },
+                        },
+                    }
+                },
+            },
+        },
+        status.HTTP_404_NOT_FOUND: {
+            "description": "The link doesn't exist or isn't valid anymore.",
         },
     },
 )
-async def activate_login_link(form_data: OAuth2PasswordRequestForm = Depends()):
+async def activate_login_code(form_data: OAuth2PasswordRequestForm = Depends()):
     email = await ModelUser.validate_magic_link(form_data.password)
     if email:
         await ModelUser.delete_magic_link(email)
-        cookie, _ = create_access_code(email)
+        cookie, expires_in = create_access_code(email, 86400)
+        user_info = await ModelUser.get_info(email)
         try:
-            await ModelUser.set_cookie(email, cookie)
-            return {"token_type": "Bearer", "access_token": cookie}
+            await ModelUser.set_cookie(email, cookie, expires_in)
+            return {"token_type": "Bearer", "access_token": cookie, "expires_in": 86400, "user_info": user_info}
         except e:
             return Response(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
     else:
