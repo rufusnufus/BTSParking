@@ -2,6 +2,7 @@ from fastapi import APIRouter, Body, Depends, HTTPException, Response, status
 from fastapi.encoders import jsonable_encoder
 
 from app.core.security import cookie_is_none, oauth2_scheme
+from app.logs import logger
 from app.models.car import Car as ModelCar
 from app.models.user import User as ModelUser
 from app.schemas.car import InputCar, OutputCar
@@ -45,6 +46,7 @@ async def create_car(
     ),
     auth_token: str = Depends(oauth2_scheme),
 ):
+    logger.info(f"function: create_car, params: car={car}, auth_token={auth_token}")
     if cookie_is_none(auth_token):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     valid_email = await ModelUser.check_cookie(auth_token)
@@ -81,6 +83,7 @@ async def create_car(
     },
 )
 async def get_cars(auth_token: str = Depends(oauth2_scheme)):
+    logger.info(f"function: get_cars, params: auth_token={auth_token}")
     if cookie_is_none(auth_token):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     valid_email = await ModelUser.check_cookie(auth_token)
@@ -113,6 +116,9 @@ async def get_cars(auth_token: str = Depends(oauth2_scheme)):
     },
 )
 async def delete_car(car_id: int, auth_token: str = Depends(oauth2_scheme)):
+    logger.info(
+        f"function: delete_car, params: car_id={car_id}, auth_token={auth_token}"
+    )
     if cookie_is_none(auth_token):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     valid_email = await ModelUser.check_cookie(auth_token)

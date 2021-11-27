@@ -65,7 +65,7 @@ RUN poetry install && \
 
 WORKDIR /home/app
 USER app
-RUN mkdir app
+RUN mkdir app && mkdir logs
 
 # will become mountpoint of our code
 WORKDIR /home/app/app

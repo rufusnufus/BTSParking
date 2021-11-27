@@ -14,6 +14,7 @@ class OutputCar(BaseModel):
     model: str
     license_number: str
 
+
 class Booking(BaseModel):
     occupying_car: OutputCar
     space_id: int

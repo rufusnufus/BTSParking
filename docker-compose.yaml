@@ -4,7 +4,7 @@ x-logging:
   &default-logging
   options:
     tag: "{{ .ImageName }}|{{ .Name }}"
-    max-size: '100m'
+    max-size: '200m'
     max-file: '3'
   driver: json-file
 
@@ -27,7 +27,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data/
+      - postgres-data:/var/lib/postgresql/data/
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
@@ -88,10 +88,35 @@ services:
       - prometheus-data:/prometheus
     command: --config.file=/etc/prometheus/prometheus.yml
     <<: *default-set
+  
+  loki:
+    image: grafana/loki:2.3.0
+    container_name: monitoring-loki
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - grafana-data:/var/lib/grafana
+    <<: *default-set
+
+  promtail:
+    image: grafana/promtail:2.3.0
+    container_name: monitoring-promtail
+    ports:
+      - "9080:9080"
+    volumes:
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - ./promtail.yml:/etc/promtail/promtail.yml:ro
+      - promtail-data:/var/lib/promtail/positions
+    command: -config.file=/etc/promtail/promtail.yml
+    <<: *default-set
 
 volumes:
-  postgres_data:
+  grafana-data:
+  postgres-data:
   prometheus-data:
+  loki-data:
+  promtail-data:
 
 networks:
   parking:
