@@ -9,7 +9,7 @@ from fastapi.security import OAuth2PasswordBearer
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 load_dotenv(os.path.join(BASE_DIR, "../.env"))
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/v1/activate-login-link")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/v1/activate-login-code")
 
 
 def create_access_code(email: str, expires_in: int) -> tuple:
