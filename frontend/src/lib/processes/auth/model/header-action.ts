@@ -4,15 +4,11 @@ import type { Readable } from 'svelte/store';
 
 import { page, session } from '$app/stores';
 import { LoginButton } from '$lib/features/auth';
-import { NavDropdown } from '$lib/features/top-level-nav'
+import { NavDropdown } from '$lib/features/top-level-nav';
 
 type HeaderActionComponent = typeof SvelteComponent;
 
-const noHeaderActionPages = [
-  '/',
-  '/login',
-  '/check-magic-link',
-]
+const noHeaderActionPages = ['/', '/login', '/check-magic-link'];
 
 export const headerAction: Readable<HeaderActionComponent | null> = derived(
   [page, session],
@@ -27,4 +23,4 @@ export const headerAction: Readable<HeaderActionComponent | null> = derived(
       return LoginButton;
     }
   }
-)
+);

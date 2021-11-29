@@ -10,13 +10,15 @@
       id: 1,
       model: 'Volkswagen Touareg',
       license_number: 'A001BC',
-    }
+    },
   ];
 
   const { close } = getContext('simple-modal');
 </script>
 
-<header class="flex justify-center items-center p-4 rounded-t-lg bg-gray-800 text-white font-medium text-2xl">
+<header
+  class="flex justify-center items-center p-4 rounded-t-lg bg-gray-800 text-white font-medium text-2xl"
+>
   A3
 </header>
 <div class="p-4">

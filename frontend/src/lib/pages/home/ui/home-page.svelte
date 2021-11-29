@@ -2,7 +2,10 @@
   <p class="text-2xl lg:text-4xl font-medium">Welcome to BTS.Parking</p>
   <p class="lg:text-xl mt-1">Park your car comfortably with us</p>
   <div class="mt-12">
-    <a href="/login" class="py-2 px-12 lg:px-24 bg-red-800 rounded hover:bg-red-700">Log in</a>
+    <a
+      href="/login"
+      class="py-2 px-12 lg:px-24 bg-red-800 rounded hover:bg-red-700">Log in</a
+    >
   </div>
 </main>
 

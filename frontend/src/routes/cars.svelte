@@ -3,10 +3,7 @@
   import { fetchCars } from '$lib/pages/cars';
   import { composeLoaders } from '$lib/shared/compose-loaders';
 
-  export const load = composeLoaders(
-    requireAuthorization,
-    fetchCars,
-  );
+  export const load = composeLoaders(requireAuthorization, fetchCars);
 </script>
 
 <script lang="ts">

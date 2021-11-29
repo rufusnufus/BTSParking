@@ -5,9 +5,8 @@ export const skipHomeForAuthorizedUsers: Load = ({ session }) => {
     return {
       status: 302,
       redirect: '/zones',
-    }
+    };
   }
 
   return {};
-}
-
+};

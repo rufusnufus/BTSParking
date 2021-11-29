@@ -28,6 +28,6 @@
   }
 
   .space.free {
-    background: #80C477;
+    background: #80c477;
   }
 </style>

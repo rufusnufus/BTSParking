@@ -9,5 +9,4 @@ export const requireAuthorization: Load = ({ session }) => {
   }
 
   return {};
-}
-
+};

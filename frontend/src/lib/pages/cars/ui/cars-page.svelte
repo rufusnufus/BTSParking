@@ -19,7 +19,9 @@
   {/if}
 
   <div class="flex justify-center mt-2">
-    <AddCarButton disabled={addingCar} on:click={() => addingCar = !addingCar} />
+    <AddCarButton
+      disabled={addingCar}
+      on:click={() => (addingCar = !addingCar)}
+    />
   </div>
 </div>
-

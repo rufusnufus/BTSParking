@@ -18,5 +18,5 @@ export const menuItems: MenuItemData[] = [
   {
     text: 'Log out',
     action: api.logOut,
-  }
+  },
 ];
