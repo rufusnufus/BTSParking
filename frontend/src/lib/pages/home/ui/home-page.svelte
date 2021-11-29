@@ -8,7 +8,7 @@
     >
   </div>
 
-  <div class="px-3 py-1 absolute left-4 bottom-4 rounded-md bg-black bg-opacity-40 font-light text-sm">
+  <div class="credits px-3 py-1 absolute left-4 bottom-4 rounded-md bg-black bg-opacity-40 font-light text-sm">
     Photo by <a href="https://unsplash.com/@jordankgraff?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Jordan Graff</a> on <a href="https://unsplash.com/?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>
   </div>
 </main>
@@ -21,7 +21,7 @@
     background-position-y: center;
   }
 
-  a {
+  .credits a {
     text-decoration: underline;
   }
 </style>
