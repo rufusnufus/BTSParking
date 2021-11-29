@@ -1,4 +1,4 @@
-import api from '$lib/shared/api';
+import { goto } from "$app/navigation";
 
 export interface MenuItemData {
   text: string;
@@ -17,6 +17,9 @@ export const menuItems: MenuItemData[] = [
   },
   {
     text: 'Log out',
-    action: api.logOut,
+    async action(): Promise<void> {
+      await fetch('/logout');
+      await goto('/');
+    },
   },
 ];
