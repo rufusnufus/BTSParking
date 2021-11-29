@@ -3,7 +3,7 @@ import type { RequestHandler } from '@sveltejs/kit';
 
 import api from '$lib/shared/api';
 
-export const setTokenCookie: RequestHandler = async (request) => {
+export const setMeCookie: RequestHandler = async request => {
   const code = request.query.get('code');
   if (code === null) {
     return {
@@ -13,14 +13,18 @@ export const setTokenCookie: RequestHandler = async (request) => {
   }
 
   try {
-    const { access_token: token, expires_in: maxAge } = await api
-      .with({ fetch })
-      .activateLoginCode(code);
+    const {
+      access_token: token,
+      expires_in: maxAge,
+      user_info: userInfo,
+    } = await api.with({ fetch }).activateLoginCode(code);
+
+    const cookieValue = JSON.stringify({ token, ...userInfo });
     return {
       status: 302,
       headers: {
-        'location': '/',
-        'set-cookie': cookie.serialize('AUTH_TOKEN', token, {
+        location: '/',
+        'set-cookie': cookie.serialize('ME', cookieValue, {
           httpOnly: true,
           sameSite: 'strict',
           maxAge,
@@ -31,6 +35,6 @@ export const setTokenCookie: RequestHandler = async (request) => {
     console.error(e);
     return {
       status: 500,
-    }
+    };
   }
 };

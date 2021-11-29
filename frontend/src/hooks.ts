@@ -1,5 +1,3 @@
-import {
-  determineAuthorized,
-} from '$lib/processes/auth';
+import { identifySelf } from '$lib/processes/auth';
 
-export const getSession = determineAuthorized;
+export const getSession = identifySelf;

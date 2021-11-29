@@ -1,3 +1,3 @@
-import { removeTokenCookie } from '$lib/features/auth';
+import { removeMeCookie } from '$lib/features/auth';
 
-export const get = removeTokenCookie;
+export const get = removeMeCookie;

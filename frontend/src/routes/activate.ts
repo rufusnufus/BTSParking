@@ -1,3 +1,3 @@
-import { setTokenCookie } from '$lib/features/auth';
+import { setMeCookie } from '$lib/features/auth';
 
-export const get = setTokenCookie;
+export const get = setMeCookie;
