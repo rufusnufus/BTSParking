@@ -39,7 +39,7 @@
           <MenuItem
             id="user-menu-item-{index}"
             href={menuItem.href}
-            action={menuItem.action}
+            rel={menuItem.rel}
           >
             {menuItem.text}
           </MenuItem>

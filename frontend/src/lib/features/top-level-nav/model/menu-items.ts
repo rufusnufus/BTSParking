@@ -1,9 +1,7 @@
-import { goto } from "$app/navigation";
-
 export interface MenuItemData {
   text: string;
   href?: string;
-  action?: () => void;
+  rel?: 'external';
 }
 
 export const menuItems: MenuItemData[] = [
@@ -17,9 +15,7 @@ export const menuItems: MenuItemData[] = [
   },
   {
     text: 'Log out',
-    async action(): Promise<void> {
-      await fetch('/logout');
-      await goto('/');
-    },
+    href: '/logout',
+    rel: 'external',
   },
 ];
