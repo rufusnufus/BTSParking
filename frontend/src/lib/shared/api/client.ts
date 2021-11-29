@@ -80,7 +80,7 @@ class API {
     formData.append('password', loginCode);
 
     return this.apiClient
-      .post('activate-login-link', { body: formData })
+      .post('activate-login-code', { body: formData })
       .json();
   }
 
