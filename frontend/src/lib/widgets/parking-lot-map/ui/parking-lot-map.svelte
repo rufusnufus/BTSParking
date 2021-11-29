@@ -3,7 +3,7 @@
   import { Zone } from '$lib/entities/zone';
   import { Gate } from '$lib/entities/gate';
   import { fixedAspectRatio, placeOnGrid } from '$lib/shared/ui';
-  import type { ParkingLotMapDefinition } from '$lib/shared/types';
+  import type { ParkingLotMapDefinition } from '$lib/shared/api';
 
   import { colorFor } from '../lib/color-palette';
   import { determineLabelDirection } from '../lib/determine-label-direction';

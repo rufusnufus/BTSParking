@@ -90,6 +90,8 @@ paths:
       summary: Terminate a user's session.
       tags:
         - Authorization
+      security:
+        - tokenAuth: []
       responses:
         '204':
           description: Session terminated successfully.
@@ -221,11 +223,11 @@ paths:
             application/json:
               schema:
                 type: object
+                required:
+                  - id
                 properties:
                   id:
                     $ref: '#/components/schemas/Car/properties/id'
-                required:
-                  - id
         '401':
           $ref: '#/components/responses/Unauthorized'
 
@@ -430,7 +432,6 @@ components:
       required:
         - occupying_car
         - space_id
-        - booked_from
         - booked_until
       properties:
         occupying_car:
@@ -439,6 +440,7 @@ components:
           type: integer
         booked_from:
           type: string
+          readOnly: true
         booked_until:
           type: string
       example:
@@ -490,6 +492,10 @@ components:
 
     Car:
       type: object
+      required:
+        - id
+        - model
+        - license_number
       properties:
         id:
           type: integer
@@ -498,10 +504,6 @@ components:
           type: string
         license_number:
           type: string
-      required:
-        - id
-        - model
-        - license_number
       example:
         id: 1
         model: Volkswagen Touareg

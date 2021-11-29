@@ -1,4 +1,4 @@
-import type { Divider, MapDefinition } from '$lib/shared/types';
+import type { Divider, MapDefinition } from '$lib/shared/api';
 
 export function injectBoundaries<OtherObjectType>(
   mapDefinition: MapDefinition<Divider | OtherObjectType>

@@ -3,8 +3,6 @@ import type { Handle } from '@sveltejs/kit';
 
 import api from '$lib/shared/api';
 
-const _24hours = 24 * 60 * 60;
-
 export const interceptLoginCode: Handle = async ({ request, resolve }) => {
   const code = request.query.get('code');
   if (request.path !== '/login' || code === null) {
@@ -12,7 +10,9 @@ export const interceptLoginCode: Handle = async ({ request, resolve }) => {
   }
 
   try {
-    const token = (await api.with(fetch).activateLoginLink(code)).access_token;
+    const { access_token: token, expires_in: maxAge } = await api
+      .with({ fetch })
+      .activateLoginCode(code);
     const response = await resolve(request);
     return {
       ...response,
@@ -21,7 +21,7 @@ export const interceptLoginCode: Handle = async ({ request, resolve }) => {
         'set-cookie': cookie.serialize('AUTH_TOKEN', token, {
           httpOnly: true,
           sameSite: 'strict',
-          maxAge: _24hours,
+          maxAge,
         }),
       },
     };

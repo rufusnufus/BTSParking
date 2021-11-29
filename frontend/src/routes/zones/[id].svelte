@@ -6,7 +6,7 @@
 
 <script lang="ts">
   import { ZonePage } from '$lib/pages/zone';
-  import type { ZoneMapDefinition } from '$lib/shared/types';
+  import type { ZoneMapDefinition } from '$lib/shared/api';
 
   export let mapDefinition: ZoneMapDefinition;
 </script>

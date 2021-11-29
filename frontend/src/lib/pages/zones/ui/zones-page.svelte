@@ -1,10 +1,10 @@
 <script lang="ts">
   import { ParkingLotMap } from '$lib/widgets/parking-lot-map';
-  import type { MapDefinition } from '$lib/shared/types';
+  import type { ParkingLotMapDefinition } from '$lib/shared/api';
 
   import { injectBoundaries } from '../lib/inject-boundaries';
 
-  export let mapDefinition: MapDefinition;
+  export let mapDefinition: ParkingLotMapDefinition;
 
   $: injectBoundaries(mapDefinition);
 </script>
