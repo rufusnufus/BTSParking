@@ -1,5 +1,11 @@
-import { determineAuthorized, interceptLoginCode } from '$lib/processes/auth';
+import { sequence } from '@sveltejs/kit/hooks';
+
+import {
+  determineAuthorized,
+  interceptLoginCode,
+  interceptLogout,
+} from '$lib/processes/auth';
 
 export const getSession = determineAuthorized;
 
-export const handle = interceptLoginCode;
+export const handle = sequence(interceptLoginCode, interceptLogout);
