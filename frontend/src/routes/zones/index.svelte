@@ -3,10 +3,7 @@
   import { mockFetchGlobalMap } from '$lib/pages/zones';
   import { composeLoaders } from '$lib/shared/compose-loaders';
 
-  export const load = composeLoaders(
-    requireAuthorization,
-    mockFetchGlobalMap,
-  );
+  export const load = composeLoaders(requireAuthorization, mockFetchGlobalMap);
 </script>
 
 <script lang="ts">

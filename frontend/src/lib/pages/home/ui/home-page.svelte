@@ -1,4 +1,6 @@
-<main class="flex flex-col items-center py-16 self-stretch flex-1 text-white relative">
+<main
+  class="flex flex-col items-center py-16 self-stretch flex-1 text-white relative"
+>
   <p class="text-2xl lg:text-4xl font-medium">Welcome to BTS.Parking</p>
   <p class="lg:text-xl mt-1">Park your car comfortably with us</p>
   <div class="mt-12">
@@ -8,8 +10,18 @@
     >
   </div>
 
-  <div class="credits px-3 py-1 absolute left-4 bottom-4 rounded-md bg-black bg-opacity-40 font-light text-sm">
-    Photo by <a href="https://unsplash.com/@jordankgraff?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Jordan Graff</a> on <a href="https://unsplash.com/?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>
+  <div
+    class="credits px-3 py-1 absolute left-4 bottom-4 rounded-md bg-black bg-opacity-40 font-light text-sm"
+  >
+    Photo by <a
+      href="https://unsplash.com/@jordankgraff?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText"
+      >Jordan Graff</a
+    >
+    on
+    <a
+      href="https://unsplash.com/?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText"
+      >Unsplash</a
+    >
   </div>
 </main>
 

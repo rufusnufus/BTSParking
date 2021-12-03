@@ -4,7 +4,11 @@
   import { fetchCars } from '$lib/pages/cars';
   import { composeLoaders } from '$lib/shared/compose-loaders';
 
-  export const load = composeLoaders(requireAuthorization, fetchCars, fetchZoneMap);
+  export const load = composeLoaders(
+    requireAuthorization,
+    fetchCars,
+    fetchZoneMap
+  );
 </script>
 
 <script lang="ts">

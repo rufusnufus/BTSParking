@@ -17,9 +17,7 @@
 </script>
 
 <Dialog>
-  <svelte:fragment slot="header">
-    A3
-  </svelte:fragment>
+  <svelte:fragment slot="header">A3</svelte:fragment>
   <div class="mb-6" slot="body">
     {#if selectedCar === undefined}
       {#if $cars.length > 0}
@@ -31,7 +29,7 @@
                 <SelectCarButton
                   {car}
                   selected={car === selectedCar}
-                  on:click={() => selectedCar = car}
+                  on:click={() => (selectedCar = car)}
                 />
               </svelte:fragment>
             </CarDisplayCard>
@@ -40,11 +38,16 @@
       {:else}
         <EmptyState icon={IconCar}>
           <p>You don't have any cars yet!</p>
-          <p>Add your car on <a href="/cars" sveltekit:prefetch>the Cars page</a>.</p>
+          <p>
+            Add your car on <a href="/cars" sveltekit:prefetch>the Cars page</a
+            >.
+          </p>
         </EmptyState>
       {/if}
     {:else if bookedUntil === undefined}
-      <div class="text-gray-600 mb-2">Until when would you like to book a space?</div>
+      <div class="text-gray-600 mb-2">
+        Until when would you like to book a space?
+      </div>
       <input
         class="appearance-none rounded-md relative mt-2 px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
         type="datetime-local"
