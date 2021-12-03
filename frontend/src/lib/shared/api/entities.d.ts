@@ -30,7 +30,9 @@ export interface Zone extends Rectangle {
   type: 'zone';
   id: number;
   name: string;
-  booked_spaces?: number;
+  free_spaces: number;
+  own_booked_spaces?: number;
+  hourly_rate: number;
 }
 
 export interface Road extends Rectangle {

@@ -20,7 +20,8 @@
     {#if object.type === 'zone'}
       <Zone
         name={object.name}
-        bookedSpaces={object?.booked_spaces ?? 0}
+        bookedSpaces={object?.own_booked_spaces ?? 0}
+        hasFreeSpaces={object.free_spaces !== 0}
         style={[
           `background-color: ${colorFor(index, 0.4)}`,
           placeOnGrid(object.start, object.end, width, height),
