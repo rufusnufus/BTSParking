@@ -1,6 +1,6 @@
 <script lang="ts">
   import { session } from '$app/stores';
-  import { saveNewCar } from '$lib/features/cars';
+  import { saveNewCar, DeleteCarButton } from '$lib/features/cars';
   import { CarDisplayCard, CarForm, cars } from '$lib/entities/car';
 
   export let withNewCarForm = false;
@@ -11,7 +11,11 @@
     class="grid gap-y-10 grid-cols-1 gap-x-6 sm:grid-cols-2 lg:grid-cols-3 xl:gap-x-8"
   >
     {#each $cars as car (car.id)}
-      <CarDisplayCard {car} />
+      <CarDisplayCard {car}>
+        <svelte:fragment slot="action">
+          <DeleteCarButton {car} />
+        </svelte:fragment>
+      </CarDisplayCard>
     {/each}
     {#if withNewCarForm}
       <CarForm on:submit={e => saveNewCar(e, $session.token)} />

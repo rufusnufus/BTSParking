@@ -127,7 +127,7 @@ class API {
   }
 
   /** Create a new car. */
-  createCar(model: string, licenseNumber: string): Promise<Car['id']> {
+  createCar(model: string, licenseNumber: string): Promise<Pick<Car, 'id'>> {
     this.ensureAuthorized();
     return this.apiClient
       .post('cars', {
