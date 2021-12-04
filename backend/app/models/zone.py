@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Table
+from sqlalchemy import Column, Integer, String, Table, select
 
 from app.db import db, metadata
 
@@ -21,6 +21,12 @@ class Zone:
         query = zones.select().where(zones.c.id == id)
         zone = await db.fetch_one(query)
         return zone
+
+    @classmethod
+    async def get_hourly_rate_by_zone(cls, id):
+        query = select(zones.c.hourly_rate).where(zones.c.id == id)
+        hourly_rate = await db.fetch_one(query)
+        return hourly_rate['hourly_rate']
 
     @classmethod
     async def get_width_height(cls, id):

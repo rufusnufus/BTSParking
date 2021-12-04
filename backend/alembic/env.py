@@ -24,6 +24,7 @@ from app.models.car import cars
 from app.models.space import spaces
 from app.models.zone import zones
 from app.models.road import roads
+from app.models.booking import bookings
 from app import db
 target_metadata = db.metadata
 

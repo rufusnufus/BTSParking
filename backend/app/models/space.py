@@ -1,6 +1,6 @@
 import datetime
 
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, Table, and_, or_
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, Table, select, and_, or_
 
 from app.db import db, metadata
 
@@ -65,6 +65,12 @@ class Space:
         )
         space = await db.fetch_one(query)
         return space
+    
+    @classmethod
+    async def get_zone_by_space(cls, id):
+        query = select(spaces.c.zone_id).where(spaces.c.id == id)
+        zone = await db.fetch_one(query)
+        return zone['zone_id']
 
     @classmethod
     async def check_free_space(cls, space_id, zone_id):
