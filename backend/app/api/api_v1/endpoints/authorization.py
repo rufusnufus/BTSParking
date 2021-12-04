@@ -69,7 +69,6 @@ async def send_login_link(user: User):
 async def get_login_code(user: User):
     logger.info(f"function: get_login_code, params: {user}")
     user_exists = await ModelUser.get(**user.dict())
-
     if not user_exists:
         await ModelUser.create(**user.dict(), is_admin=False)
 

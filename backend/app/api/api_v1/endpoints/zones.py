@@ -5,6 +5,7 @@ from fastapi.encoders import jsonable_encoder
 
 from app.core.security import cookie_is_none, oauth2_scheme
 from app.logs import logger
+from app.models.booking import Booking as ModelBooking
 from app.models.car import Car as ModelCar
 from app.models.road import Road
 from app.models.space import Space
@@ -185,7 +186,7 @@ async def get_spaces(zone_id: int, auth_token: str = Depends(oauth2_scheme)):
     summary="Get the objects of the zone map and information on own cars.",
     responses={
         status.HTTP_200_OK: {
-            "description": """A map of the zone with user's 
+            "description": """A map of the zone with user's
                                 own cars is returned successfully.""",
             "content": {
                 "application/json": {
@@ -328,12 +329,26 @@ async def book_space(
     if not free_space:
         return Response(status_code=status.HTTP_306_RESERVED)
 
+    booked_from = datetime.datetime.now()
+    booked_until = datetime.datetime.strptime(space.booked_until, "%Y-%m-%dT%H:%MZ")
+    logger.info(f"function: book_space, booked_until={type(booked_from)}")
+
+    user_booking = await ModelBooking.add_booking(
+        booked_from=booked_from,
+        booked_until=booked_until,
+        space_id=space.space_id,
+        car_id=space.occupying_car.id,
+        email=valid_email,
+    )
+    if not user_booking:
+        return Response(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
     booked_space = await Space.book_space(
         car_id=space.occupying_car.id,
         space_id=space.space_id,
         zone_id=zone_id,
-        booked_from=datetime.datetime.now(),
-        booked_until=datetime.datetime.strptime(space.booked_until, "%Y-%m-%dT%H:%MZ"),
+        booked_from=booked_from,
+        booked_until=booked_until,
     )
 
     if booked_space:

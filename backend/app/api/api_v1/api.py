@@ -1,6 +1,7 @@
 from fastapi import APIRouter, status
 
-from app.api.api_v1.endpoints import authorization, cars, maps, zones
+from app.api.api_v1.endpoints import (authorization, cars, maps, statistics,
+                                      zones)
 
 router = APIRouter(
     prefix="/api/v1",
@@ -13,3 +14,4 @@ router.include_router(authorization.router, tags=["Authorization"])
 router.include_router(maps.router, prefix="/map", tags=["Booking"])
 router.include_router(zones.router, prefix="/zones", tags=["Booking"])
 router.include_router(cars.router, prefix="/cars", tags=["Car Management"])
+router.include_router(statistics.router, prefix="/statistics", tags=["Statistics"])
