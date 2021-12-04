@@ -3,7 +3,7 @@
   import { Zone } from '$lib/entities/zone';
   import { Gate } from '$lib/entities/gate';
   import { fixedAspectRatio, placeOnGrid } from '$lib/shared/ui';
-  import type { ParkingLotMapDefinition } from '$lib/shared/types';
+  import type { ParkingLotMapDefinition } from '$lib/shared/api';
 
   import { colorFor } from '../lib/color-palette';
   import { determineLabelDirection } from '../lib/determine-label-direction';
@@ -20,7 +20,8 @@
     {#if object.type === 'zone'}
       <Zone
         name={object.name}
-        bookedSpaces={object?.booked_spaces ?? 0}
+        bookedSpaces={object?.own_booked_spaces ?? 0}
+        hasFreeSpaces={object.free_spaces !== 0}
         style={[
           `background-color: ${colorFor(index, 0.4)}`,
           placeOnGrid(object.start, object.end, width, height),

@@ -11,7 +11,7 @@ zones = Table(
     Column("start_y", Integer, nullable=False),
     Column("end_x", Integer, nullable=False),
     Column("end_y", Integer, nullable=False),
-    Column("hourly_rate", Integer, nullable=False)
+    Column("hourly_rate", Integer, nullable=False),
 )
 
 
@@ -21,7 +21,7 @@ class Zone:
         query = zones.select().where(zones.c.id == id)
         zone = await db.fetch_one(query)
         return zone
-    
+
     @classmethod
     async def get_width_height(cls, id):
         query = zones.select().where(zones.c.id == id)

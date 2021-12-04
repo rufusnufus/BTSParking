@@ -6,9 +6,12 @@ interface Event {
   detail: Pick<Car, 'model' | 'license_number'>;
 }
 
-export async function saveNewCar({ detail }: Event, token: string): Promise<void> {
+export async function saveNewCar(
+  { detail }: Event,
+  token: string
+): Promise<void> {
   const { model, license_number } = detail;
-  const id = await api.auth(token).createCar(model, license_number);
+  const { id } = await api.with({ token }).createCar(model, license_number);
   cars.update($cars => {
     $cars.push({ id, model, license_number });
     return $cars;

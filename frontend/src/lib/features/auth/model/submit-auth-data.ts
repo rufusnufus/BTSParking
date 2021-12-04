@@ -29,8 +29,7 @@ export async function submitAuthDataCheat(
 
   try {
     const loginCode = await api.getLoginCode(email);
-    await fetch(`/login?code=${loginCode}`);
-    await goto('/zones');
+    window.location.href = `/activate?code=${loginCode}`;
   } catch (e) {
     // TODO: add proper error handling
     console.error('Request failed, sorry', e);

@@ -1,3 +1,4 @@
+import merge from 'ts-deepmerge';
 import type { Load, LoadOutput } from '@sveltejs/kit';
 
 /**
@@ -12,7 +13,12 @@ export function composeLoaders(...loaders: Load[]): Load {
     let loadingResult: LoadOutput = {};
 
     for (const loader of loaders) {
-      loadingResult = Object.assign(loadingResult, await loader(options));
+      const loadOutput = await loader(options);
+      if (loadOutput === undefined) {
+        return loadOutput;
+      }
+
+      loadingResult = merge(loadingResult, loadOutput);
 
       if (loadingResult.status !== undefined) {
         break;

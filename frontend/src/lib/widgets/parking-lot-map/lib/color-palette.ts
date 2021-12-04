@@ -56,5 +56,7 @@ const colors = <ColorRGB[]>[
 ];
 
 export function colorFor(index: number, opacity: number): string {
-  return `rgba(${(colors[index] ?? [235, 235, 235]).join(' ')} / ${opacity * 100}%)`;
+  return `rgba(${(colors[index] ?? [235, 235, 235]).join(' ')} / ${
+    opacity * 100
+  }%)`;
 }

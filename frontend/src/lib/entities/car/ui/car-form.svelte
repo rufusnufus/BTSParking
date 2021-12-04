@@ -3,8 +3,8 @@
     submit: {
       model: string;
       license_number: string;
-    }
-  };
+    };
+  }
 </script>
 
 <script lang="ts">
@@ -40,7 +40,9 @@
     />
   </div>
   <div class="flex justify-end mt-4">
-    <button class="flex items-center bg-gray-800 hover:bg-gray-700 shadow hover:shadow-lg rounded-md px-4 py-2 text-white font-medium">
+    <button
+      class="flex items-center bg-gray-800 hover:bg-gray-700 shadow hover:shadow-lg rounded-md px-4 py-2 text-white font-medium"
+    >
       <IconCheck class="w-5 h-5 mr-2" />
       Save
     </button>

@@ -2,7 +2,7 @@
   import { createEventDispatcher } from 'svelte';
   import { Space } from '$lib/entities/space';
   import { fixedAspectRatio, placeOnGrid } from '$lib/shared/ui';
-  import type { ZoneMapDefinition } from '$lib/shared/types';
+  import type { ZoneMapDefinition } from '$lib/shared/api';
 
   export let width: number;
   export let height: number;

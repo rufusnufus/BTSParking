@@ -5,8 +5,8 @@ export const ignoreLoginCode: Load = async ({ page }) => {
     return {
       redirect: '/',
       status: 302,
-    }
+    };
   }
 
   return {};
-}
+};

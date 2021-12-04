@@ -1,9 +1,7 @@
-import api from '$lib/shared/api';
-
 export interface MenuItemData {
   text: string;
   href?: string;
-  action?: () => void;
+  rel?: 'external';
 }
 
 export const menuItems: MenuItemData[] = [
@@ -17,6 +15,7 @@ export const menuItems: MenuItemData[] = [
   },
   {
     text: 'Log out',
-    action: api.logOut,
-  }
+    href: '/logout',
+    rel: 'external',
+  },
 ];

@@ -1,4 +1,4 @@
-import type { Point } from '$lib/shared/types';
+import type { Point } from '$lib/shared/api';
 
 export function determineLabelDirection(
   start: Point,

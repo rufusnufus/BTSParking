@@ -13,7 +13,9 @@
       "end": {
         "x": 98,
         "y": 64
-      }
+      },
+      "free_spaces": 15,
+      "hourly_rate": 15.0
     },
     {
       "type": "zone",
@@ -26,7 +28,10 @@
       "end": {
         "x": 98,
         "y": 130
-      }
+      },
+      "free_spaces": 0,
+      "own_booked_spaces": 1,
+      "hourly_rate": 15.0
     },
     {
       "type": "zone",
@@ -39,7 +44,9 @@
       "end": {
         "x": 210,
         "y": 64
-      }
+      },
+      "free_spaces": 0,
+      "hourly_rate": 15.0
     },
     {
       "type": "zone",
@@ -52,7 +59,9 @@
       "end": {
         "x": 210,
         "y": 130
-      }
+      },
+      "free_spaces": 1,
+      "hourly_rate": 15.0
     },
     {
       "type": "divider",

@@ -11,7 +11,7 @@
   {id}
   aria-expanded={`${dropdownShown}`}
   aria-haspopup="true"
-  on:click={() => dropdownShown = !dropdownShown}
+  on:click={() => (dropdownShown = !dropdownShown)}
 >
   <span class="sr-only">Open user menu</span>
   <IconUser class="w-6 h-6 text-white" />

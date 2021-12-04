@@ -4,9 +4,11 @@ export function fixedAspectRatio<NodeType extends HTMLElement>(
   aspectRatio: number
 ): Record<string, never> {
   const { width } = node.getBoundingClientRect();
-  const { height: parentHeight } = node.parentElement?.getBoundingClientRect() ?? { height: 0 };
+  const { height: parentHeight } =
+    node.parentElement?.getBoundingClientRect() ?? { height: 0 };
   const nodeStyle = getComputedStyle(node);
-  const verticalMargins = parseInt(nodeStyle.marginTop, 10) + parseInt(nodeStyle.marginBottom, 10);
+  const verticalMargins =
+    parseInt(nodeStyle.marginTop, 10) + parseInt(nodeStyle.marginBottom, 10);
   const heightLimit = parentHeight - verticalMargins;
 
   const computedHeight = width / aspectRatio;

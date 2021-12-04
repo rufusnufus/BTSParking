@@ -90,6 +90,8 @@ paths:
       summary: Terminate a user's session.
       tags:
         - Authorization
+      security:
+        - tokenAuth: []
       responses:
         '204':
           description: Session terminated successfully.
@@ -221,11 +223,11 @@ paths:
             application/json:
               schema:
                 type: object
+                required:
+                  - id
                 properties:
                   id:
                     $ref: '#/components/schemas/Car/properties/id'
-                required:
-                  - id
         '401':
           $ref: '#/components/responses/Unauthorized'
 
@@ -246,6 +248,26 @@ paths:
           description: This car isn't owned by this user.
         '404':
           description: This car doesn't exist.
+  
+  /statistics:
+    get:
+      operationId: getUserStatistics
+      summary: Get the whole information of user bookings.
+      security:
+        - tokenAuth: []
+      tags:
+        - Statistics
+      responses:
+        '200':
+          description: A whole user statistics about bookings is returned successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Statistics'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
 
 components:
   responses:
@@ -430,7 +452,6 @@ components:
       required:
         - occupying_car
         - space_id
-        - booked_from
         - booked_until
       properties:
         occupying_car:
@@ -439,6 +460,7 @@ components:
           type: integer
         booked_from:
           type: string
+          readOnly: true
         booked_until:
           type: string
       example:
@@ -449,7 +471,28 @@ components:
         space_id: 3
         booked_from: '2021-11-01T18:00Z'
         booked_until: '2021-11-01T20:00Z'
-
+    
+    Statistics:
+      type: object
+      required:
+        - hourly_rate
+        - booking_info
+      properties:
+        hourly_rate:
+          type: integer
+        booking_info:
+          $ref: '#/components/schemas/Car'
+      example:
+        hourly_rate: 15
+        booking_info:
+          occupying_car:
+            id: 1
+            model: Volkswagen Touareg
+            license_number: A000AA
+          space_id: 3
+          booked_from: '2021-11-01T18:00Z'
+          booked_until: '2021-11-01T20:00Z'
+    
     User:
       type: object
       required:
@@ -490,6 +533,10 @@ components:
 
     Car:
       type: object
+      required:
+        - id
+        - model
+        - license_number
       properties:
         id:
           type: integer
@@ -498,10 +545,6 @@ components:
           type: string
         license_number:
           type: string
-      required:
-        - id
-        - model
-        - license_number
       example:
         id: 1
         model: Volkswagen Touareg

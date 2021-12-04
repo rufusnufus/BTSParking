@@ -8,7 +8,7 @@
 
 <Modal>
   <Header>
-    <svelte:component slot="action" this={$headerAction} />
+    <svelte:component this={$headerAction} slot="action" />
   </Header>
 
   <slot />
