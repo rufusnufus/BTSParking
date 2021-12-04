@@ -26,7 +26,7 @@ class Zone:
     async def get_hourly_rate_by_zone(cls, id):
         query = select(zones.c.hourly_rate).where(zones.c.id == id)
         hourly_rate = await db.fetch_one(query)
-        return hourly_rate['hourly_rate']
+        return hourly_rate["hourly_rate"]
 
     @classmethod
     async def get_width_height(cls, id):

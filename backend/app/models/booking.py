@@ -1,5 +1,6 @@
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Table, select
-from app.logs import logger
+from sqlalchemy import (Column, DateTime, ForeignKey, Integer, String, Table,
+                        select)
+
 from app.db import db, metadata
 
 bookings = Table(
@@ -13,21 +14,21 @@ bookings = Table(
     Column("email", String, ForeignKey("users.email"), index=True),
 )
 
+
 class Booking:
     @classmethod
     async def get_bookings(cls, email):
-        query = select(bookings.c.booked_from, 
-                        bookings.c.booked_until, 
-                        bookings.c.space_id, 
-                        bookings.c.car_id).where(
-                            bookings.c.email == email
-                        )
+        query = select(
+            bookings.c.booked_from,
+            bookings.c.booked_until,
+            bookings.c.space_id,
+            bookings.c.car_id,
+        ).where(bookings.c.email == email)
         user_bookings = await db.fetch_all(query)
         return user_bookings
-    
+
     @classmethod
     async def add_booking(cls, **booking):
-        logger.info(booking)
         query = bookings.insert().values(**booking)
         user_booking = await db.execute(query)
         return user_booking

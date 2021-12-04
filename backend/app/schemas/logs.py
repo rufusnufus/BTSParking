@@ -1,7 +1,7 @@
 # Reference: https://stackoverflow.com/a/67937084
 
-import os
 import logging
+import os
 
 from pydantic import BaseModel
 

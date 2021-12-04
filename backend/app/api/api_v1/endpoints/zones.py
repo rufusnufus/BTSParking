@@ -5,12 +5,12 @@ from fastapi.encoders import jsonable_encoder
 
 from app.core.security import cookie_is_none, oauth2_scheme
 from app.logs import logger
+from app.models.booking import Booking as ModelBooking
 from app.models.car import Car as ModelCar
 from app.models.road import Road
 from app.models.space import Space
 from app.models.user import User as ModelUser
 from app.models.zone import Zone
-from app.models.booking import Booking as ModelBooking
 from app.schemas.car import Booking
 
 router = APIRouter(
@@ -186,7 +186,7 @@ async def get_spaces(zone_id: int, auth_token: str = Depends(oauth2_scheme)):
     summary="Get the objects of the zone map and information on own cars.",
     responses={
         status.HTTP_200_OK: {
-            "description": """A map of the zone with user's 
+            "description": """A map of the zone with user's
                                 own cars is returned successfully.""",
             "content": {
                 "application/json": {
@@ -331,10 +331,8 @@ async def book_space(
 
     booked_from = datetime.datetime.now()
     booked_until = datetime.datetime.strptime(space.booked_until, "%Y-%m-%dT%H:%MZ")
-    logger.info(
-        f"function: book_space, booked_until={type(booked_from)}"
-    )
-    
+    logger.info(f"function: book_space, booked_until={type(booked_from)}")
+
     user_booking = await ModelBooking.add_booking(
         booked_from=booked_from,
         booked_until=booked_until,
@@ -352,7 +350,6 @@ async def book_space(
         booked_from=booked_from,
         booked_until=booked_until,
     )
-    
 
     if booked_space:
         return Response(status_code=status.HTTP_204_NO_CONTENT)

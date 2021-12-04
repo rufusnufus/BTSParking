@@ -2,13 +2,14 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.encoders import jsonable_encoder
 
 from app.core.security import cookie_is_none, oauth2_scheme
-from app.models.car import Car as ModelCar
 from app.models.booking import Booking
+from app.models.car import Car as ModelCar
 from app.models.space import Space
-from app.models.zone import Zone
 from app.models.user import User as ModelUser
+from app.models.zone import Zone
 
 router = APIRouter()
+
 
 @router.get(
     "/",
@@ -21,19 +22,21 @@ router = APIRouter()
                     "examples": {
                         "statistics": {
                             "summary": "statistics",
-                            "value": [{
-                                "hourly_rate": 15,
-                                "booking": {
-                                    "occupying_car": {
-                                        "id": 1,
-                                        "model": "Volkswagen Touareg",
-                                        "license_number": "A000AA"
+                            "value": [
+                                {
+                                    "hourly_rate": 15,
+                                    "booking": {
+                                        "occupying_car": {
+                                            "id": 1,
+                                            "model": "Volkswagen Touareg",
+                                            "license_number": "A000AA",
+                                        },
+                                        "space_id": 3,
+                                        "booked_from": "2021-11-01T18:00Z",
+                                        "booked_until": "2021-11-01T20:00Z",
                                     },
-                                    "space_id": 3,
-                                    "booked_from": "2021-11-01T18:00Z",
-                                    "booked_until": "2021-11-01T20:00Z"
                                 }
-                            }],
+                            ],
                         },
                     }
                 }
@@ -61,11 +64,11 @@ async def get_statistics(
         hourly_rate = await Zone.get_hourly_rate_by_zone(zone)
         json_booking["hourly_rate"] = hourly_rate
         json_booking["booking"] = {
-                "occupying_car": occupying_car,
-                "space_id": json_booking["space_id"],
-                "booked_from": json_booking["booked_from"].split('.')[0],
-                "booked_until": json_booking["booked_until"],
-            }
+            "occupying_car": occupying_car,
+            "space_id": json_booking["space_id"],
+            "booked_from": json_booking["booked_from"].split(".")[0],
+            "booked_until": json_booking["booked_until"],
+        }
         json_booking.pop("car_id", None)
         json_booking.pop("space_id", None)
         json_booking.pop("booked_from", None)
