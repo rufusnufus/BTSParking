@@ -263,7 +263,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Statistics'
+                type: array
+                items:
+                  $ref: '#/components/schemas/Statistics'
         '401':
           $ref: '#/components/responses/Unauthorized'
 
@@ -469,7 +471,28 @@ components:
         space_id: 3
         booked_from: '2021-11-01T18:00Z'
         booked_until: '2021-11-01T20:00Z'
-
+    
+    Statistics:
+      type: object
+      required:
+        - hourly_rate
+        - booking_info
+      properties:
+        hourly_rate:
+          type: integer
+        booking_info:
+          $ref: '#/components/schemas/Car'
+      example:
+        hourly_rate: 15
+        booking_info:
+          occupying_car:
+            id: 1
+            model: Volkswagen Touareg
+            license_number: A000AA
+          space_id: 3
+          booked_from: '2021-11-01T18:00Z'
+          booked_until: '2021-11-01T20:00Z'
+    
     User:
       type: object
       required:
@@ -526,47 +549,6 @@ components:
         id: 1
         model: Volkswagen Touareg
         license_number: A000AA
-    
-    BookingStatistics:
-      type: object
-      required:
-        - date
-        - hours
-        - minutes
-        - cost
-        - car
-      properties:
-        date:
-          type: string
-        hours:
-          type: integer
-        minutes:
-          type: integer
-        cost:
-          type: integer
-        car:
-          $ref: '#/components/schemas/Car'
-      example:
-        date: '2021-11-01'
-        hours: 2
-        minutes: 0
-        cost: 30
-        car:
-          id: 1
-          model: Volkswagen Touareg
-          license_number: A000AA
-        
-        
-    
-    Statistics:
-      type: object
-      required:
-        - objects
-      properties:
-        objects:
-          type: array
-          items:
-            $ref: '#/components/schemas/BookingStatistics'
 
   securitySchemes:
     tokenAuth:
