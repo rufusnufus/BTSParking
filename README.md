@@ -40,7 +40,3 @@ To run from the `main` branch, follow the instructions below:
    docker-compose up -d
    ```
    The web app will be available at [localhost](http://localhost). OpenAPI documentation for the API will be available at [localhost:8000/docs](http://localhost:8000/docs).
-4. To populate db run:
-   ```bash
-   cat populate.sql | docker exec -i db psql -U postgres
-   ```
