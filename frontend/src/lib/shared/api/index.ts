@@ -1,4 +1,4 @@
-export { default } from './client';
+export { browserAPI, serverAPI, universalAPI } from './client';
 export type {
   Car,
   Booking,

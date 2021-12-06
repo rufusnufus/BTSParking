@@ -2,14 +2,15 @@
 /// <reference types="unplugin-icons/types/svelte" />
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-namespace viteDefine {
+declare namespace viteDefine {
   interface Vite {
     define: Define;
   }
 
   interface Define {
-    backendPrefixURL: string | undefined;
+    clientBackendPrefix: string | undefined;
+    serverBackendPrefix: string | undefined;
   }
 }
 
-const vite: viteDefine.Vite;
+declare const vite: viteDefine.Vite;

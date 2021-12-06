@@ -1,7 +1,7 @@
 import cookie from 'cookie';
 import type { RequestHandler } from '@sveltejs/kit';
 
-import api from '$lib/shared/api';
+import { serverAPI } from '$lib/shared/api';
 
 export const setMeCookie: RequestHandler = async request => {
   const code = request.query.get('code');
@@ -17,7 +17,7 @@ export const setMeCookie: RequestHandler = async request => {
       access_token: token,
       expires_in: maxAge,
       user_info: userInfo,
-    } = await api.with({ fetch }).activateLoginCode(code);
+    } = await serverAPI.activateLoginCode(code);
 
     const cookieValue = JSON.stringify({ token, ...userInfo });
     return {

@@ -1,4 +1,4 @@
-import ky from 'ky';
+import ky from 'ky-universal';
 import NodeFormData from 'form-data';
 import type { Options as KyOptions } from 'ky';
 
@@ -11,20 +11,24 @@ import type {
   ZoneMapDefinition,
 } from './entities';
 
-export const prefix =
-  vite.define.backendPrefixURL ?? 'http://localhost:8000/api/v1';
+const browserPrefix =
+  vite.define.clientBackendPrefix ?? 'http://localhost:8000/api/v1';
+const serverPrefix = vite.define.serverBackendPrefix ?? browserPrefix;
 
 class APIError extends Error {}
 
 class API {
   private apiClient: typeof ky;
   private authorized: boolean;
+  private prefix: string;
 
   constructor(
+    prefixUrl: string,
     apiClientInstance: typeof ky | undefined = undefined,
     authorized = false
   ) {
-    this.apiClient = apiClientInstance ?? ky.create({ prefixUrl: prefix });
+    this.prefix = prefixUrl;
+    this.apiClient = apiClientInstance ?? ky.create({ prefixUrl });
     this.authorized = authorized;
   }
 
@@ -53,7 +57,11 @@ class API {
       };
     }
 
-    return new API(this.apiClient.extend(options), token !== undefined);
+    return new API(
+      this.prefix,
+      this.apiClient.extend(options),
+      token !== undefined
+    );
   }
 
   /** Generate a one-time link that will log a user in with their e-mail. */
@@ -143,4 +151,9 @@ class API {
   }
 }
 
-export default new API();
+export const browserAPI = new API(browserPrefix);
+export const serverAPI = new API(serverPrefix);
+
+export function universalAPI(fromBrowser: boolean): API {
+  return fromBrowser ? browserAPI : serverAPI;
+}

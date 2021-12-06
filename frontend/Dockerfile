@@ -5,7 +5,8 @@ WORKDIR /app
 # ----------
 
 FROM base AS builder
-ARG BACKEND_PREFIX_URL
+ARG CLIENT_BACKEND_PREFIX
+ARG SERVER_BACKEND_PREFIX
 COPY package.json ./
 COPY pnpm-lock.yaml ./
 RUN --mount=type=cache,id=pnpm-store,target=/root/.pnpm-store \

@@ -1,4 +1,4 @@
-import merge from 'ts-deepmerge';
+import merge from 'lodash.merge';
 import type { Load, LoadOutput } from '@sveltejs/kit';
 
 /**

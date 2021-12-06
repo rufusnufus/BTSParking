@@ -65,7 +65,8 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        BACKEND_PREFIX_URL: http://backend
+        CLIENT_BACKEND_PREFIX: http://localhost:8000/api/v1
+        SERVER_BACKEND_PREFIX: http://backend:8000/api/v1
     container_name: frontend
     ports:
       - "80:3000"

@@ -3,7 +3,8 @@ import adapterNode from '@sveltejs/adapter-node';
 import Icons from 'unplugin-icons/vite';
 
 const environment = {
-  'vite.define.backendPrefixURL': process.env.BACKEND_PREFIX_URL,
+  'vite.define.clientBackendPrefix': process.env.CLIENT_BACKEND_PREFIX,
+  'vite.define.serverBackendPrefix': process.env.SERVER_BACKEND_PREFIX,
 };
 
 for (const key in environment) {

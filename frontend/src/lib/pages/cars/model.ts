@@ -1,13 +1,14 @@
+import { browser } from '$app/env';
 import type { Load } from '@sveltejs/kit';
 
-import api from '$lib/shared/api';
+import { universalAPI } from '$lib/shared/api';
 
 export const fetchCars: Load = async ({ fetch, session }) => {
   const { token } = session;
   try {
     return {
       props: {
-        cars: await api.with({ fetch, token }).listCars(),
+        cars: await universalAPI(browser).with({ fetch, token }).listCars(),
       },
     };
   } catch (e) {
