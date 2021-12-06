@@ -64,13 +64,13 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        BACKEND_PREFIX_URL: http://backend
     container_name: frontend
     ports:
       - "80:3000"
-    environment:
-      BACKEND_PREFIX_URL: http://backend
     <<: *default-set
-  
+
   grafana:
     image: grafana/grafana:8.1.3
     container_name: monitoring-grafana
@@ -88,7 +88,7 @@ services:
       - prometheus-data:/prometheus
     command: --config.file=/etc/prometheus/prometheus.yml
     <<: *default-set
-  
+
   loki:
     image: grafana/loki:2.3.0
     container_name: monitoring-loki
