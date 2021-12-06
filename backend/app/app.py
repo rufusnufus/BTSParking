@@ -8,7 +8,7 @@ from app.logs import logger
 
 app = FastAPI(title="Async FastAPI")
 
-origins = ["http://localhost:3000"]
+origins = ["http://localhost:3000", "http://localhost"]
 
 app.add_middleware(
     CORSMiddleware,
