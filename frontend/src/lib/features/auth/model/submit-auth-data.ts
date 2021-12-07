@@ -1,5 +1,5 @@
 import { goto, prefetch } from '$app/navigation';
-import { clientAPI } from '$lib/shared/api';
+import { browserAPI } from '$lib/shared/api';
 
 const checkMagicLinkURL = '/check-magic-link';
 
@@ -28,7 +28,7 @@ export async function submitAuthDataCheat(
   }
 
   try {
-    const loginCode = await clientAPI.getLoginCode(email);
+    const loginCode = await browserAPI.getLoginCode(email);
     window.location.href = `/activate?code=${loginCode}`;
   } catch (e) {
     // TODO: add proper error handling
