@@ -6,6 +6,10 @@ export interface MenuItemData {
 
 export const menuItems: MenuItemData[] = [
   {
+    text: 'Parking lot',
+    href: '/zones',
+  },
+  {
     text: 'My cars',
     href: '/cars',
   },

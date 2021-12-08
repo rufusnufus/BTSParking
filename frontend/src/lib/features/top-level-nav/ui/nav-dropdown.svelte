@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { page } from '$app/stores';
   import Transition from 'svelte-class-transition';
 
   import { ProfileDropdownToggle } from '$lib/entities/user';
@@ -34,12 +35,12 @@
         aria-labelledby={toggleID}
         tabindex="-1"
       >
-        <!-- Active: "bg-gray-100", Not Active: "" -->
         {#each menuItems as menuItem, index (menuItem.text)}
           <MenuItem
             id="user-menu-item-{index}"
             href={menuItem.href}
             rel={menuItem.rel}
+            active={menuItem.href === $page.path}
           >
             {menuItem.text}
           </MenuItem>
