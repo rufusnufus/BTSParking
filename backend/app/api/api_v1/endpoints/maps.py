@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.encoders import jsonable_encoder
 
-from app.core.security import oauth2_scheme
+from app.core.security import cookie_is_none, oauth2_scheme
 from app.logs import logger
 from app.models.car import Car as ModelCar
 from app.models.space import Space
@@ -52,12 +52,20 @@ router = APIRouter(
     },
 )
 async def get_map(auth_token: str = Depends(oauth2_scheme)):
-    logger.info(f"function: get_map, params: auth_token={auth_token}")
+    if cookie_is_none(auth_token):
+        logger.info("function: get_map, got cookie is None")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+
     valid_email = await ModelUser.check_cookie(auth_token)
+    logger.info(f"function: get_map, email: {valid_email}")
     if not valid_email:
         # user is not authorized
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+
+    logger.info(f"function: get_map, getting all {valid_email}'s cars")
     cars = await ModelCar.get_all(valid_email)
+
+    logger.info("function: get_map, getting all zones")
     zones = await Zone.get_zones()
     json_zones = []
     for zone in zones:
