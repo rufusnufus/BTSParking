@@ -86,7 +86,7 @@ async def create_car(
 )
 async def get_cars(auth_token: str = Depends(oauth2_scheme)):
     if cookie_is_none(auth_token):
-        logger.info(f"function: get_cars, got cookie is None")
+        logger.info("function: get_cars, got cookie is None")
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     valid_email = await ModelUser.check_cookie(auth_token)
     logger.info(f"function: get_cars, email: {valid_email}")
@@ -120,25 +120,25 @@ async def get_cars(auth_token: str = Depends(oauth2_scheme)):
     },
 )
 async def delete_car(car_id: int, auth_token: str = Depends(oauth2_scheme)):
-    logger.info(
-        f"function: delete_car, params: car_id={car_id}"
-    )
+    logger.info(f"function: delete_car, params: car_id={car_id}")
     if cookie_is_none(auth_token):
-        logger.info(f"function: delete_car, got cookie is None")
+        logger.info("function: delete_car, got cookie is None")
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
-    
+
     valid_email = await ModelUser.check_cookie(auth_token)
     logger.info(f"function: delete_car, email: {valid_email}")
     if not valid_email:
         # user is not authorized
         raise HTTPException(status.HTTP_401_UNAUTHORIZED)
-    
+
     logger.info(f"function: delete_car, checking if car: {car_id} exists")
     car = await ModelCar.get(car_id)
     if not car:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
-    logger.info(f"function: delete_car, deleting car: {car_id} if it is {valid_email}'s car")
+    logger.info(
+        f"function: delete_car, deleting car: {car_id} if it is {valid_email}'s car"
+    )
     deleted_car_id = await ModelCar.delete(car_id, valid_email)
     if deleted_car_id:
         assert deleted_car_id == car_id

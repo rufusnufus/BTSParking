@@ -49,15 +49,15 @@ async def get_statistics(
     auth_token: str = Depends(oauth2_scheme),
 ):
     if cookie_is_none(auth_token):
-        logger.info(f"function: get_statistics, got cookie is None")
+        logger.info("function: get_statistics, got cookie is None")
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
-    
+
     valid_email = await ModelUser.check_cookie(auth_token)
     logger.info(f"function: get_statistics, email: {valid_email}")
     if not valid_email:
         # user is not authorized
         raise HTTPException(status.HTTP_401_UNAUTHORIZED)
-    
+
     logger.info(f"function: get_statistics, getting all {valid_email}'s bookings")
     bookings = await Booking.get_bookings(valid_email)
     own_bookings = []

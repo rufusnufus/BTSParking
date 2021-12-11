@@ -83,9 +83,9 @@ async def get_spaces(zone_id: int, auth_token: str = Depends(oauth2_scheme)):
     logger.info(f"function: get_spaces, params: zone_id={zone_id}")
 
     if cookie_is_none(auth_token):
-        logger.info(f"function: get_spaces, got cookie is None")
+        logger.info("function: get_spaces, got cookie is None")
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
-    
+
     valid_email = await ModelUser.check_cookie(auth_token)
     logger.info(f"function: get_spaces, email: {valid_email}")
     if not valid_email:
@@ -104,7 +104,7 @@ async def get_spaces(zone_id: int, auth_token: str = Depends(oauth2_scheme)):
 
     width, height = await Zone.get_width_height(id=zone_id)
 
-    logger.info(f"function: get_spaces, getting all booked spaces")
+    logger.info("function: get_spaces, getting all booked spaces")
     spaces = await Space.get_booked_spaces(zone_id)
     json_spaces = []
     for space in spaces:
@@ -136,7 +136,7 @@ async def get_spaces(zone_id: int, auth_token: str = Depends(oauth2_scheme)):
         }
         json_spaces.append(json_space)
 
-    logger.info(f"function: get_spaces, getting all free spaces")
+    logger.info("function: get_spaces, getting all free spaces")
     free_spaces = await Space.get_free_spaces(zone_id)
     json_free_spaces = []
     for free_space in free_spaces:
@@ -236,9 +236,9 @@ async def get_own_spaces(zone_id: int, auth_token: str = Depends(oauth2_scheme))
     logger.info(f"function: get_own_spaces, params: zone_id={zone_id}")
 
     if cookie_is_none(auth_token):
-        logger.info(f"function: get_own_spaces, got cookie is None")
+        logger.info("function: get_own_spaces, got cookie is None")
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
-    
+
     valid_email = await ModelUser.check_cookie(auth_token)
     logger.info(f"function: get_own_spaces, email: {valid_email}")
     if not valid_email:
@@ -323,13 +323,11 @@ async def book_space(
     ),
     auth_token: str = Depends(oauth2_scheme),
 ):
-    logger.info(
-        f"function: book_space, params: zone_id={zone_id}, space={space}"
-    )
+    logger.info(f"function: book_space, params: zone_id={zone_id}, space={space}")
     if cookie_is_none(auth_token):
-        logger.info(f"function: book_space, got cookie is None")
+        logger.info("function: book_space, got cookie is None")
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
-    
+
     valid_email = await ModelUser.check_cookie(auth_token)
     logger.info(f"function: book_space, email: {valid_email}")
     if not valid_email:
