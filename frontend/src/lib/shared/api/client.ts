@@ -79,7 +79,7 @@ class API {
   /** Perform authorization by a given one-time login code. */
   activateLoginCode(loginCode: string): Promise<TokenResponse> {
     // The interface of FormData from 'form-data' is not compliant
-    //   the standard interface of FormData
+    //   with the standard interface of FormData
     //     (https://developer.mozilla.org/docs/Web/API/FormData)
     //   The active issue on GitHub can be tracked here:
     //     https://github.com/form-data/form-data/issues/513
