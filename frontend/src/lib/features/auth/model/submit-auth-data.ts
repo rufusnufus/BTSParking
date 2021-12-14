@@ -10,14 +10,8 @@ export async function submitAuthData(email: string | undefined): Promise<void> {
 
   prefetch(checkMagicLinkURL);
 
-  try {
-    await api.requestLoginLink(email);
-    await goto(checkMagicLinkURL);
-  } catch (e) {
-    // TODO: add proper error handling
-    console.error('Request failed, sorry', e);
-    return;
-  }
+  await browserAPI.requestLoginLink(email);
+  await goto(checkMagicLinkURL);
 }
 
 export async function submitAuthDataCheat(
@@ -27,12 +21,6 @@ export async function submitAuthDataCheat(
     return;
   }
 
-  try {
-    const loginCode = await browserAPI.getLoginCode(email);
-    window.location.href = `/activate?code=${loginCode}`;
-  } catch (e) {
-    // TODO: add proper error handling
-    console.error('Request failed, sorry', e);
-    return;
-  }
+  const loginCode = await browserAPI.getLoginCode(email);
+  window.location.href = `/activate?code=${loginCode}`;
 }

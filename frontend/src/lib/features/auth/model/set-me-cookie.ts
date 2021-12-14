@@ -12,29 +12,22 @@ export const setMeCookie: RequestHandler = async request => {
     };
   }
 
-  try {
-    const {
-      access_token: token,
-      expires_in: maxAge,
-      user_info: userInfo,
-    } = await serverAPI.activateLoginCode(code);
+  const {
+    access_token: token,
+    expires_in: maxAge,
+    user_info: userInfo,
+  } = await serverAPI.activateLoginCode(code);
 
-    const cookieValue = JSON.stringify({ token, ...userInfo });
-    return {
-      status: 302,
-      headers: {
-        location: '/',
-        'set-cookie': cookie.serialize('ME', cookieValue, {
-          httpOnly: true,
-          sameSite: 'strict',
-          maxAge,
-        }),
-      },
-    };
-  } catch (e) {
-    console.error(e);
-    return {
-      status: 500,
-    };
-  }
+  const cookieValue = JSON.stringify({ token, ...userInfo });
+  return {
+    status: 302,
+    headers: {
+      location: '/',
+      'set-cookie': cookie.serialize('ME', cookieValue, {
+        httpOnly: true,
+        sameSite: 'strict',
+        maxAge,
+      }),
+    },
+  };
 };

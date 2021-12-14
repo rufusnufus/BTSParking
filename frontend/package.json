@@ -2,7 +2,7 @@
   "name": "bts-parking-frontend",
   "version": "0.0.1",
   "scripts": {
-    "dev": "svelte-kit dev",
+    "dev": "svelte-kit dev | pino-pretty --colorize --levelFirst",
     "build": "svelte-kit build",
     "preview": "svelte-kit preview",
     "check": "svelte-check --tsconfig ./tsconfig.json",
@@ -15,7 +15,8 @@
     "form-data": "^4.0.0",
     "ky": "^0.28.6",
     "ky-universal": "^0.9.1",
-    "lodash.merge": "^4.6.2"
+    "lodash.merge": "^4.6.2",
+    "pino": "^7.5.1"
   },
   "devDependencies": {
     "@iconify-json/bx": "^1.0.1",
@@ -31,6 +32,7 @@
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-svelte3": "^3.2.1",
+    "pino-pretty": "^7.2.0",
     "postcss": "^8.3.9",
     "postcss-load-config": "^3.1.0",
     "prettier": "^2.4.1",
