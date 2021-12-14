@@ -51,13 +51,17 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: backend
-    command: bash -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+    command: bash -c "alembic upgrade head && ddtrace-run uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
     volumes:
       - ./backend:/home/app/app/
     ports:
       - "8000:8000"
     depends_on:
       - db
+    environment:
+      - "DD_AGENT_HOST=datadog-agent"
+      - "DD_LOGS_INJECTION=true"
+      - "DD_SERVICE=backend"
     <<: *default-set
 
   frontend:
@@ -111,6 +115,25 @@ services:
       - promtail-data:/var/lib/promtail/positions
     command: -config.file=/etc/promtail/promtail.yml
     <<: *default-set
+
+  # dd-agent:
+  #   image: gcr.io/datadoghq/agent:latest
+  #   container_name: datadog-agent
+  #   ports:
+  #     - "8126:8126"
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock:ro
+  #     - /proc/:/host/proc/:ro
+  #     - /etc/passwd:/etc/passwd:ro
+  #     - /sys/fs/cgroup/:/host/sys/fs/cgroup:ro
+  #   environment:
+  #     - "DD_API_KEY=<>"
+  #     - "DD_SITE=<>"
+  #     - "DD_APM_ENABLED=true"
+  #     - "DD_PROCESS_AGENT_ENABLED=true"
+  #     - "DD_APM_NON_LOCAL_TRAFFIC=true"
+  #     - "DD_LOGS_CONFIG_CONTAINER_COLLECT_ALL"
+  #   <<: *default-set
 
 volumes:
   grafana-data:
