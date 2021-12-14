@@ -23,6 +23,7 @@ const config = {
   kit: {
     target: 'body',
     adapter: adapterNode(),
+    ssr: false,
     vite: {
       define: environment,
       plugins: [
