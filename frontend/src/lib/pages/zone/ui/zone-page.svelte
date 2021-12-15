@@ -4,6 +4,7 @@
 
   import { ZoneMap } from '$lib/widgets/zone-map';
   import { BookingModal } from '$lib/widgets/booking-modal';
+  import { OccupantQueryModal } from '$lib/widgets/occupant-query-modal';
   import type { ZoneMapDefinition } from '$lib/shared/api';
 
   const { open } = getContext('simple-modal');
@@ -24,10 +25,16 @@
 <main class="flex-1 flex items-center justify-center">
   <ZoneMap
     {...mapDefinition}
-    on:space-requested={() =>
+    on:space-requested={({ detail: space }) =>
       open(
         BookingModal,
-        {},
+        { space },
+        { styleContent: { padding: 0 }, closeButton: false }
+      )}
+    on:space-queried={({ detail: space }) =>
+      open(
+        OccupantQueryModal,
+        { space },
         { styleContent: { padding: 0 }, closeButton: false }
       )}
   />
