@@ -1,9 +1,9 @@
 <script lang="ts" context="module">
   import { requireAuthorization } from '$lib/processes/auth';
-  import { mockFetchGlobalMap } from '$lib/pages/zones';
+  import { fetchGlobalMap } from '$lib/pages/zones';
   import { composeLoaders } from '$lib/shared/compose-loaders';
 
-  export const load = composeLoaders(requireAuthorization, mockFetchGlobalMap);
+  export const load = composeLoaders(requireAuthorization, fetchGlobalMap);
 </script>
 
 <script lang="ts">

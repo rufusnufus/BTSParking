@@ -1,2 +1,2 @@
 export { default as ZonesPage } from './ui/zones-page.svelte';
-export { mockFetchGlobalMap } from './model';
+export { fetchGlobalMap } from './model/fetch-global-map';
