@@ -1,7 +1,7 @@
 <script lang="ts">
   import { session } from '$app/stores';
-  import { saveNewCar, DeleteCarButton } from '$lib/features/cars';
-  import { CarDisplayCard, CarForm, cars } from '$lib/entities/car';
+  import { saveNewCar, DeleteCarButton, CarForm } from '$lib/features/cars';
+  import { CarDisplayCard, cars } from '$lib/entities/car';
 
   export let withNewCarForm = false;
 </script>
