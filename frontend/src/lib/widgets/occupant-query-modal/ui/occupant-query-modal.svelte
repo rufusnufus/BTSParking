@@ -6,7 +6,7 @@
 </script>
 
 <Dialog>
-  <svelte:fragment slot="header">{space.id}</svelte:fragment>
+  <svelte:fragment slot="header">Space {space.id}</svelte:fragment>
   <div class="mb-6" slot="body">
     {#if space.booking !== undefined && space.booking.booked_from !== undefined}
       <div class="booking-details grid mb-4">
