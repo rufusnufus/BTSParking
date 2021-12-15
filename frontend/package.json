@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "cookie": "^0.4.1",
-    "form-data": "^4.0.0",
+    "formdata-node": "^4.3.1",
     "ky": "^0.28.6",
     "ky-universal": "^0.9.1",
     "lodash.merge": "^4.6.2",

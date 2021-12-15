@@ -1,5 +1,5 @@
 import ky from 'ky-universal';
-import NodeFormData from 'form-data';
+import { FormData as FormDataNode } from 'formdata-node';
 import type { Options as KyOptions } from 'ky';
 
 import type {
@@ -78,17 +78,12 @@ class API {
 
   /** Perform authorization by a given one-time login code. */
   activateLoginCode(loginCode: string): Promise<TokenResponse> {
-    // The interface of FormData from 'form-data' is not compliant
-    //   with the standard interface of FormData
-    //     (https://developer.mozilla.org/docs/Web/API/FormData)
-    //   The active issue on GitHub can be tracked here:
-    //     https://github.com/form-data/form-data/issues/513
-    const formData = new NodeFormData() as unknown as FormData;
+    const formData = new FormDataNode();
     formData.append('username', 'None');
     formData.append('password', loginCode);
 
     return this.apiClient
-      .post('activate-login-code', { body: formData })
+      .post('activate-login-code', { body: formData as FormData })
       .json();
   }
 
