@@ -186,6 +186,16 @@
       "type": "space",
       "id": 14,
       "free": false,
+      "booking": {
+        "occupying_car": {
+          "id": 1,
+          "model": "Volkswagen Touareg",
+          "license_number": "A000BC"
+        },
+        "space_id": 14,
+        "booked_from": "2021-11-31T00:00",
+        "booked_until": "2021-12-31T00:00"
+      },
       "start": {
         "x": 85,
         "y": 39
