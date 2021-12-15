@@ -7,25 +7,34 @@
 
 <header
   class="
-    flex justify-center items-center
+    grid justify-center items-center
     p-4
     rounded-t-lg
     bg-gray-800
-    text-white font-medium text-2xl
+    text-white
   "
 >
-  <slot name="header" />
+  <div />
+  <div class="text-2xl font-medium text-center">
+    <slot name="header" />
+  </div>
+  <button
+    class="inline-flex items-center justify-center px-4 py-2 rounded-lg font-medium hover:bg-white hover:bg-opacity-10"
+    on:click={() => close()}
+  >
+    <IconX class="w-6 h-6 text-white mr-1" />
+    Close
+  </button>
 </header>
 <div class="p-4">
   <slot name="body" />
   <div class="flex justify-between">
-    <button
-      class="inline-flex items-center justify-center px-4 py-2 bg-gray-800 rounded-lg text-white font-medium"
-      on:click={() => close()}
-    >
-      <IconX class="w-6 h-6 text-white mr-1" />
-      Cancel
-    </button>
-    <slot name="extra-action" />
+    <slot name="actions" />
   </div>
 </div>
+
+<style>
+  header {
+    grid-template-columns: 1fr 4fr 1fr;
+  }
+</style>
