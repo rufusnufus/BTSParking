@@ -1,4 +1,4 @@
-from ddtrace import patch
+from ddtrace import patch_all
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from prometheus_fastapi_instrumentator import Instrumentator
@@ -7,7 +7,7 @@ from app.api.api_v1 import api
 from app.db import db
 from app.logs import logger
 
-patch(fastapi=True)
+patch_all()
 app = FastAPI(title="Async FastAPI")
 
 origins = ["http://localhost:3000", "http://localhost"]
