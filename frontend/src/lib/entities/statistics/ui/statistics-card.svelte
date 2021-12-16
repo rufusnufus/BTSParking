@@ -7,7 +7,7 @@
     statisticsObject.booking.booked_from === undefined
       ? undefined
       : (new Date(statisticsObject.booking.booked_until).valueOf() -
-            new Date(statisticsObject.booking.booked_from).valueOf()) /
+          new Date(statisticsObject.booking.booked_from).valueOf()) /
         3600 /
         1000;
 
@@ -42,7 +42,8 @@
       </span>
 
       <span class="font-semibold">Total:</span>
-      <span>{Math.floor(totalTime * statisticsObject.hourly_rate * 100)} ₽</span>
+      <span>{Math.floor(totalTime * statisticsObject.hourly_rate * 100)} ₽</span
+      >
     {/if}
   </div>
 </div>

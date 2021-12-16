@@ -89,7 +89,13 @@
         on:click={() => {
           if (selectedCar?.id !== undefined && bookedUntil !== undefined) {
             close();
-            confirmBooking(zoneID, space.id, selectedCar, new Date(bookedUntil), $session.token);
+            confirmBooking(
+              zoneID,
+              space.id,
+              selectedCar,
+              new Date(bookedUntil),
+              $session.token
+            );
           }
         }}
       >

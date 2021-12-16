@@ -8,7 +8,10 @@ export interface LogRequestOptions {
   failed?: boolean;
 }
 
-export function logRequest(request: ServerRequest, options: LogRequestOptions = {}): void {
+export function logRequest(
+  request: ServerRequest,
+  options: LogRequestOptions = {}
+): void {
   const cookies =
     typeof request.headers['cookie'] === 'string'
       ? cookie.parse(request.headers['cookie'])
@@ -18,16 +21,22 @@ export function logRequest(request: ServerRequest, options: LogRequestOptions = 
       ? JSON.parse(cookies['ME'])
       : undefined;
 
-  logger.info({
-    method: request.method,
-    path: request.path,
-    query: request.query,
-    user:
-      meCookie !== undefined
-        ? { email: meCookie.email, is_admin: meCookie.is_admin }
-        : undefined,
-  }, options.failed ? 'Failed request' : 'Incoming request');
-  logger.debug(request.headers, options.failed ? 'Failed request headers' : 'Request headers');
+  logger.info(
+    {
+      method: request.method,
+      path: request.path,
+      query: request.query,
+      user:
+        meCookie !== undefined
+          ? { email: meCookie.email, is_admin: meCookie.is_admin }
+          : undefined,
+    },
+    options.failed ? 'Failed request' : 'Incoming request'
+  );
+  logger.debug(
+    request.headers,
+    options.failed ? 'Failed request headers' : 'Request headers'
+  );
   if (request.body) {
     logger.debug(
       request.rawBody,

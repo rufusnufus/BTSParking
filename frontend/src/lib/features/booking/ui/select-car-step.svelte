@@ -28,8 +28,7 @@
   <EmptyState icon={IconCar}>
     <p>You don't have any cars yet!</p>
     <p>
-      Add your car on <a href="/cars" sveltekit:prefetch>the Cars page</a
-      >.
+      Add your car on <a href="/cars" sveltekit:prefetch>the Cars page</a>.
     </p>
   </EmptyState>
 {/if}
