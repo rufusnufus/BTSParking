@@ -39,6 +39,11 @@ class API {
     }
   }
 
+  /** Return the date in ISO format without seconds. */
+  private formatDate(date: Date) {
+    return date.toISOString().slice(0, -8) + 'Z';
+  }
+
   /**
    * Use a custom `fetch` function or add an API token.
    *
@@ -118,7 +123,7 @@ class API {
       json: <Booking>{
         space_id: spaceID,
         occupying_car: car,
-        booked_until: bookedUntil.toISOString(),
+        booked_until: this.formatDate(bookedUntil),
       },
     });
   }

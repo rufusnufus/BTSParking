@@ -1,5 +1,6 @@
 <script lang="ts">
   import { getContext } from 'svelte';
+  import { page, session } from '$app/stores';
   import IconCheck from '~icons/bx/bx-check';
   import IconLeftArrowAlt from '~icons/bx/bx-left-arrow-alt';
   import IconRightArrowAlt from '~icons/bx/bx-right-arrow-alt';
@@ -28,6 +29,7 @@
         1000;
 
   const { close } = getContext('simple-modal');
+  const zoneID = parseInt($page.params.id, 10);
 </script>
 
 <Dialog>
@@ -87,7 +89,7 @@
         on:click={() => {
           if (selectedCar?.id !== undefined && bookedUntil !== undefined) {
             close();
-            confirmBooking(selectedCar.id, new Date(bookedUntil));
+            confirmBooking(zoneID, space.id, selectedCar, new Date(bookedUntil), $session.token);
           }
         }}
       >
