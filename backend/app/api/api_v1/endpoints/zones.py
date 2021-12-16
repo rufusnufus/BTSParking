@@ -286,7 +286,83 @@ async def get_own_spaces(zone_id: int, auth_token: str = Depends(oauth2_scheme))
                 "booked_until": booked_until,
             }
             own_booked_spaces.append(json_booked_space)
-    return {"width": width, "height": height, "objects": own_booked_spaces}
+    
+    logger.info("function: get_own_spaces, getting all booked spaces")
+    spaces = await Space.get_booked_spaces(zone_id)
+    json_spaces = []
+    cars = list(cars)
+    print(cars)
+    for space in spaces:
+        print('kvak')
+        json_space = jsonable_encoder(space)
+        print(f'space: {json_space}')
+        json_space["free"] = False
+        json_space["type"] = "space"
+
+        json_space.pop("zone_id", None)
+        car_id = json_space.pop("car_id", None)
+        print(car_id)
+        print(cars)
+        if car_id in cars:
+            continue
+
+        start_x = json_space.pop("start_x", None)
+        start_y = json_space.pop("start_y", None)
+        json_space["start"] = {"x": start_x, "y": start_y}
+
+        end_x = json_space.pop("end_x", None)
+        end_y = json_space.pop("end_y", None)
+        json_space["end"] = {"x": end_x, "y": end_y}
+
+        json_spaces.append(json_space)
+    
+    logger.info("function: get_own_spaces, getting all free spaces")
+    free_spaces = await Space.get_free_spaces(zone_id)
+    json_free_spaces = []
+    for free_space in free_spaces:
+        json_free_space = jsonable_encoder(free_space)
+
+        json_free_space["free"] = True
+        json_free_space["type"] = "space"
+
+        json_free_space.pop("zone_id", None)
+        json_free_space.pop("car_id", None)
+
+        start_x = json_free_space.pop("start_x", None)
+        start_y = json_free_space.pop("start_y", None)
+        json_free_space["start"] = {"x": start_x, "y": start_y}
+
+        end_x = json_free_space.pop("end_x", None)
+        end_y = json_free_space.pop("end_y", None)
+        json_free_space["end"] = {"x": end_x, "y": end_y}
+
+        json_free_space.pop("booked_from", None)
+        json_free_space.pop("booked_until", None)
+
+        json_free_spaces.append(json_free_space)
+
+    logger.info(f"function: get_own_spaces, getting all roads in zone: {zone_id}")
+    roads = await Road.get_roads(zone_id)
+    json_roads = []
+    for road in roads:
+        json_road = jsonable_encoder(road)
+
+        json_road["type"] = "road"
+
+        json_road.pop("zone_id", None)
+        json_road.pop("id", None)
+
+        start_x = json_road.pop("start_x", None)
+        start_y = json_road.pop("start_y", None)
+        json_road["start"] = {"x": start_x, "y": start_y}
+
+        end_x = json_road.pop("end_x", None)
+        end_y = json_road.pop("end_y", None)
+        json_road["end"] = {"x": end_x, "y": end_y}
+
+        json_roads.append(json_road)
+
+    return {"width": width, "height": height, "objects": own_booked_spaces + json_spaces + json_free_spaces + json_roads}
 
 
 @router.post(
