@@ -229,7 +229,6 @@ async def book_space(
                         "license_number": "A000AA",
                     },
                     "space_id": 3,
-                    "booked_from": "2021-11-01T18:00Z",
                     "booked_until": "2021-11-01T20:00Z",
                 },
             }
