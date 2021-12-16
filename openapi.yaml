@@ -248,7 +248,7 @@ paths:
           description: This car isn't owned by this user.
         '404':
           description: This car doesn't exist.
-  
+
   /statistics:
     get:
       operationId: getUserStatistics
@@ -471,7 +471,7 @@ components:
         space_id: 3
         booked_from: '2021-11-01T18:00Z'
         booked_until: '2021-11-01T20:00Z'
-    
+
     Statistics:
       type: object
       required:
@@ -481,7 +481,7 @@ components:
         hourly_rate:
           type: integer
         booking_info:
-          $ref: '#/components/schemas/Car'
+          $ref: '#/components/schemas/Booking'
       example:
         hourly_rate: 15
         booking_info:
@@ -492,7 +492,7 @@ components:
           space_id: 3
           booked_from: '2021-11-01T18:00Z'
           booked_until: '2021-11-01T20:00Z'
-    
+
     User:
       type: object
       required:
