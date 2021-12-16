@@ -8,6 +8,7 @@ import type {
   TokenResponse,
   User,
   ParkingLotMapDefinition,
+  Statistics,
   ZoneMapDefinition,
 } from './entities';
 
@@ -148,6 +149,12 @@ class API {
   deleteCar(carID: number) {
     this.ensureAuthorized();
     return this.apiClient.delete(`cars/${carID}`);
+  }
+
+  /** Get the whole information of user bookings. */
+  getUserStatistics(): Promise<Statistics[]> {
+    this.ensureAuthorized();
+    return this.apiClient.get('statistics').json();
   }
 }
 
