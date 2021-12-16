@@ -208,10 +208,13 @@ async def get_own_spaces(zone_id: int, auth_token: str = Depends(oauth2_scheme))
     summary="Book a parking space",
     responses={
         status.HTTP_204_NO_CONTENT: {
-            "description": "Space booked successfully",
+            "description": "Space booked successfully.",
         },
         status.HTTP_306_RESERVED: {
             "description": "This space is occupied.",
+        },
+        status.HTTP_400_BAD_REQUEST: {
+            "description": "Bad request body.",
         },
     },
 )
@@ -257,9 +260,12 @@ async def book_space(
         return Response(status_code=status.HTTP_306_RESERVED)
 
     booked_from = datetime.datetime.now()
-    booked_until = datetime.datetime.strptime(space.booked_until, "%Y-%m-%dT%H:%MZ")
+    try:
+        booked_until = datetime.datetime.strptime(space.booked_until, "%Y-%m-%dT%H:%MZ")
+    except:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST)
+    
     logger.info(f"function: book_space, booked_until={type(booked_from)}")
-
     user_booking = await ModelBooking.add_booking(
         booked_from=booked_from,
         booked_until=booked_until,
