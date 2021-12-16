@@ -166,9 +166,3 @@ async def logout(auth_token: str = Depends(oauth2_scheme)):
     await ModelUser.delete_cookie(auth_token)
     response = Response(status_code=status.HTTP_204_NO_CONTENT)
     return response
-
-
-# @router.delete("/user", status_code = status.HTTP_204_NO_CONTENT)
-# async def delete_user(user: User):
-#     await ModelUser.delete(**user.dict())
-#     return Response(status_code=status.HTTP_204_NO_CONTENT)
