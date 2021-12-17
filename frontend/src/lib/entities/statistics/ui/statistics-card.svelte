@@ -16,15 +16,13 @@
   }
 </script>
 
-<div class="p-4 rounded-md shadow-md flex flex-col justify-between">
-  <div class="booking-details grid mb-4">
-    {#if statisticsObject.booking.booked_from !== undefined}
-      <span class="font-semibold">Date:</span>
-      <span>
-        {new Date(statisticsObject.booking.booked_from).toLocaleDateString()}
-      </span>
-    {/if}
-
+<div class="rounded-md shadow-md flex flex-col justify-between">
+  {#if statisticsObject.booking.booked_from !== undefined}
+    <div class="py-1 text-center bg-red-900 text-white font-semibold rounded-t">
+      {new Date(statisticsObject.booking.booked_from).toLocaleDateString()}
+    </div>
+  {/if}
+  <div class="p-4 booking-details grid mb-4">
     <span class="font-semibold">Car:</span>
     <div class="flex align-center">
       {car.model}
@@ -36,7 +34,7 @@
     </div>
 
     {#if totalTime !== undefined}
-      <span class="font-semibold">Total time of booking:</span>
+      <span class="font-semibold">Booking time:</span>
       <span>
         {Math.floor(totalTime)} hour{s(Math.floor(totalTime))}
       </span>
