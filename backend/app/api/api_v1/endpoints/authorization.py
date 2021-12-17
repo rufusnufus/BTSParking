@@ -1,3 +1,4 @@
+import os
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from fastapi.security import OAuth2PasswordRequestForm
 
@@ -37,7 +38,7 @@ async def send_login_link(user: User):
     code, code_expire_time = create_access_code(email, 60 * 5)
 
     logger.info("function: send_login_link, generating magic link")
-    magic_link = f"http://127.0.0.1:80/login?code={code}"
+    magic_link = f"{os.getenv('HOST', 'http://localhost:80')}/activate?code={code}"
 
     await ModelUser.set_magic_link(email, code, code_expire_time)
     logger.info(f"function: send_login_link, magic link for {email} is set")
