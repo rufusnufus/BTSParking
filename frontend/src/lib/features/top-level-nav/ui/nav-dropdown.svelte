@@ -41,6 +41,7 @@
             href={menuItem.href}
             rel={menuItem.rel}
             active={menuItem.href === $page.path}
+            on:click={() => dropdownShown = false}
           >
             {menuItem.text}
           </MenuItem>
