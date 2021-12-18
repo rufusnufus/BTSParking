@@ -53,17 +53,16 @@ services:
     container_name: backend
     command: bash -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
     environment:
-      HOST: http://localhost:80
+      - "HOST=http://localhost:80"
+      - "DD_AGENT_HOST=datadog-agent"
+      - "DD_LOGS_INJECTION=true"
+      - "DD_SERVICE=backend"
     volumes:
       - ./backend:/home/app/app/
     ports:
       - "8000:8000"
     depends_on:
       - db
-    environment:
-      - "DD_AGENT_HOST=datadog-agent"
-      - "DD_LOGS_INJECTION=true"
-      - "DD_SERVICE=backend"
     <<: *default-set
 
   frontend:
