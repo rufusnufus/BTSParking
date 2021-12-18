@@ -8,12 +8,16 @@ global:
   external_labels:
       monitor: 'codelab-monitor'
 
-# A scrape configuration containing exactly one endpoint to scrape:
-# Here it's Prometheus itself.
 scrape_configs:
   - job_name:        'backend'
-    scrape_interval: 5s
+    scrape_interval: 50s
     # metrics_path defaults to '/metrics'
     # scheme defaults to 'http'.
     static_configs:
       - targets: ['backend:8000']
+  - job_name:        'frontend'
+    scrape_interval: 50s
+    # metrics_path defaults to '/metrics'
+    # scheme defaults to 'http'.
+    static_configs:
+      - targets: ['frontend:3000']

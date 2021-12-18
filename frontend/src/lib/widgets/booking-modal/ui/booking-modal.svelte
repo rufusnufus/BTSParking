@@ -1,50 +1,43 @@
 <script lang="ts">
   import { getContext } from 'svelte';
-  import IconCar from '~icons/bx/bx-car';
+  import { page, session } from '$app/stores';
   import IconCheck from '~icons/bx/bx-check';
+  import IconLeftArrowAlt from '~icons/bx/bx-left-arrow-alt';
+  import IconRightArrowAlt from '~icons/bx/bx-right-arrow-alt';
 
-  import { confirmBooking } from '$lib/features/booking';
-  import { cars, CarDisplayCard } from '$lib/entities/car';
-  import { EmptyState, Dialog } from '$lib/shared/ui';
-  import type { Car } from '$lib/shared/api';
-  import SelectCarButton from './select-car-button.svelte';
+  import { confirmBooking, SelectCarStep } from '$lib/features/booking';
+  import { Dialog } from '$lib/shared/ui';
+  import type { Car, Space } from '$lib/shared/api';
   import BankCard from './bank-card.svelte';
 
+  export let space: Space;
+  export let parkingRate = 1500;
+
+  let currentStep: 1 | 2 | 3 = 1;
   let selectedCar: Car | undefined;
   let bookedUntil: string | undefined;
 
+  $: canNotProceed =
+    (currentStep === 1 && selectedCar === undefined) ||
+    (currentStep === 2 && bookedUntil === undefined);
+  $: total =
+    bookedUntil === undefined
+      ? undefined
+      : (parkingRate *
+          (new Date(bookedUntil).valueOf() - Date.now().valueOf())) /
+        3600 /
+        1000;
+
   const { close } = getContext('simple-modal');
+  const zoneID = parseInt($page.params.id, 10);
 </script>
 
 <Dialog>
-  <svelte:fragment slot="header">A3</svelte:fragment>
+  <svelte:fragment slot="header">Space {space.id}</svelte:fragment>
   <div class="mb-6" slot="body">
-    {#if selectedCar === undefined}
-      {#if $cars.length > 0}
-        <div class="text-gray-600 mb-2">Select one of your cars:</div>
-        <div class="grid gap-y-10 gap-x-6 sm:grid-cols-1 lg:grid-cols-2">
-          {#each $cars as car (car.id)}
-            <CarDisplayCard {car}>
-              <svelte:fragment slot="action">
-                <SelectCarButton
-                  {car}
-                  selected={car === selectedCar}
-                  on:click={() => (selectedCar = car)}
-                />
-              </svelte:fragment>
-            </CarDisplayCard>
-          {/each}
-        </div>
-      {:else}
-        <EmptyState icon={IconCar}>
-          <p>You don't have any cars yet!</p>
-          <p>
-            Add your car on <a href="/cars" sveltekit:prefetch>the Cars page</a
-            >.
-          </p>
-        </EmptyState>
-      {/if}
-    {:else if bookedUntil === undefined}
+    {#if currentStep === 1}
+      <SelectCarStep bind:selectedCar />
+    {:else if currentStep === 2}
       <div class="text-gray-600 mb-2">
         Until when would you like to book a space?
       </div>
@@ -54,7 +47,7 @@
         bind:value={bookedUntil}
         name="booked_until"
       />
-    {:else}
+    {:else if selectedCar !== undefined && bookedUntil !== undefined && total !== undefined}
       <div class="text-gray-600 mb-2">Confirm your booking details:</div>
       <div class="booking-details grid mb-4">
         <span class="font-semibold">Car:</span>
@@ -69,7 +62,7 @@
         <span class="font-semibold">Booked until:</span>
         <span>{new Date(bookedUntil).toLocaleString()}</span>
         <span class="font-semibold">Total:</span>
-        <span>9999$</span>
+        <span>{Math.floor(total)} ₽</span>
       </div>
 
       <div class="text-gray-600 mb-2">Enter your bank card details:</div>
@@ -78,30 +71,51 @@
       </div>
     {/if}
   </div>
-  <svelte:fragment slot="extra-action">
-    {#if selectedCar !== undefined && bookedUntil !== undefined}
+  <svelte:fragment slot="actions">
+    {#if currentStep === 1}
+      <div />
+    {:else}
+      <button
+        class="inline-flex items-center justify-center px-4 py-2 bg-red-800 hover:bg-red-700 rounded-lg text-white font-medium"
+        on:click={() => currentStep--}
+      >
+        <IconLeftArrowAlt class="w-6 text-white mr-1" />
+        Back
+      </button>
+    {/if}
+    {#if currentStep === 3}
       <button
         class="inline-flex items-center justify-center px-4 py-2 bg-green-800 hover:bg-green-700 rounded-lg text-white font-medium"
         on:click={() => {
           if (selectedCar?.id !== undefined && bookedUntil !== undefined) {
             close();
-            confirmBooking(selectedCar.id, new Date(bookedUntil));
+            confirmBooking(
+              zoneID,
+              space.id,
+              selectedCar,
+              new Date(bookedUntil),
+              $session.token
+            );
           }
         }}
       >
         <IconCheck class="w-6 h-6 text-white mr-1" />
         Confirm
       </button>
+    {:else}
+      <button
+        class="inline-flex items-center justify-center px-4 py-2 bg-red-800 hover:bg-red-700 disabled:bg-gray-500 rounded-lg text-white font-medium"
+        on:click={() => currentStep++}
+        disabled={canNotProceed}
+      >
+        Next
+        <IconRightArrowAlt class="w-6 text-white ml-1" />
+      </button>
     {/if}
   </svelte:fragment>
 </Dialog>
 
 <style>
-  a {
-    text-decoration: underline;
-    color: blue;
-  }
-
   .booking-details {
     grid-template-columns: 8em auto;
   }

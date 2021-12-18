@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { session } from '$app/stores';
   import { createEventDispatcher } from 'svelte';
   import { Space } from '$lib/entities/space';
   import { fixedAspectRatio, placeOnGrid } from '$lib/shared/ui';
@@ -19,8 +20,15 @@
       <Space
         name={object.id.toString()}
         free={object.free}
+        disabled={$session.is_admin === object.free}
         style={placeOnGrid(object.start, object.end, width, height)}
-        on:click={() => dispatch('space-requested', object.id)}
+        on:click={() => {
+          if ($session.is_admin) {
+            dispatch('space-queried', object);
+          } else if (object.free) {
+            dispatch('space-requested', object);
+          }
+        }}
       />
     {:else}
       <div

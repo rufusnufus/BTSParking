@@ -9,6 +9,7 @@ export type {
   Point,
   Road,
   Space,
+  Statistics,
   TokenResponse,
   User,
   Zone,

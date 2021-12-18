@@ -1,15 +1,32 @@
 <script lang="ts">
+  import { createEventDispatcher } from 'svelte';
+
   export let name: string;
   export let free: boolean;
   export let style: string;
+  export let disabled = false;
+
+  const dispatch = createEventDispatcher();
 </script>
 
 <div
   role="button"
   tabindex="0"
-  class="space p-2 flex flex-col items-center justify-between rounded-lg hover:scale-105 transition-transform shadow-md hover:shadow-lg before:block font-medium text-sm md:text-base text-white"
+  class="
+    space
+    p-2
+    flex flex-col items-center justify-between
+    rounded-lg
+    {disabled ? 'cursor-default' : 'hover:scale-105 hover:shadow-lg'}
+    transition-transform
+    shadow-md
+    before:block
+    font-medium
+    text-sm md:text-base
+    text-white
+  "
   class:free
-  on:click
+  on:click={() => !disabled && dispatch('click')}
   {style}
 >
   <span class="text-lg lg:text-3xl">{name}</span>

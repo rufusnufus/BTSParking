@@ -14,6 +14,7 @@
   {id}
   {href}
   {rel}
+  on:click
 >
   <slot />
 </a>

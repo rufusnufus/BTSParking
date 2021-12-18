@@ -1,7 +1,7 @@
 <script lang="ts">
   export let name: string;
   export let bookedSpaces: number;
-  export let hasFreeSpaces: boolean;
+  export let freeSpaces: boolean | number;
   export let style: string | undefined = undefined;
 
   function s(amount: number) {
@@ -20,10 +20,14 @@
   {style}
 >
   <span class="text-lg lg:text-2xl font-medium">{name}</span>
-  {#if !hasFreeSpaces}
-    <span>No more free spaces</span>
-  {/if}
-  {#if bookedSpaces !== undefined && bookedSpaces > 0}
-    <span>{bookedSpaces} space{s(bookedSpaces)} booked</span>
+  {#if typeof freeSpaces === 'boolean'}
+    {#if !freeSpaces}
+      <span>No more free spaces</span>
+    {/if}
+    {#if bookedSpaces !== undefined && bookedSpaces > 0}
+      <span>{bookedSpaces} space{s(bookedSpaces)} booked</span>
+    {/if}
+  {:else}
+    <span>{freeSpaces} space{s(freeSpaces)} free</span>
   {/if}
 </div>

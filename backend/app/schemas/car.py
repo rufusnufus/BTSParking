@@ -18,7 +18,6 @@ class OutputCar(BaseModel):
 class Booking(BaseModel):
     occupying_car: OutputCar
     space_id: int
-    booked_from: str
     booked_until: str
 
     class Config:

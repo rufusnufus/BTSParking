@@ -18,7 +18,11 @@
 </script>
 
 <form
-  on:submit|preventDefault={() => dispatch('submit', { model, license_number })}
+  on:submit|preventDefault={() => {
+    dispatch('submit', { model, license_number });
+    model = '';
+    license_number = '';
+  }}
   class="p-4 rounded-md shadow-md flex flex-col justify-between"
 >
   <div class="flex justify-between items-center text-sm text-gray-700">

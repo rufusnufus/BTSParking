@@ -146,19 +146,3 @@ async def delete_car(car_id: int, auth_token: str = Depends(oauth2_scheme)):
     else:
         # if user asks to get not his car
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
-
-
-# @router.get("/{car_id}", response_model=OutputCar)
-# async def get_saved_car(car_id: int, auth_token: str = Depends(oauth2_scheme)):
-#     if cookie_is_none(auth_token):
-#         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
-#     valid_email = await ModelUser.check_cookie(auth_token)
-#     if not valid_email:
-#         # user is not authorized
-#         raise HTTPException(status.HTTP_401_UNAUTHORIZED)
-#     car = await ModelCar.get(car_id, valid_email)
-#     if car:
-#         return OutputCar(**car).dict()
-#     else:
-#         # if user asks car that doesn't exist
-#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)

@@ -1,3 +1,4 @@
+import os
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from fastapi.security import OAuth2PasswordRequestForm
 
@@ -37,7 +38,7 @@ async def send_login_link(user: User):
     code, code_expire_time = create_access_code(email, 60 * 5)
 
     logger.info("function: send_login_link, generating magic link")
-    magic_link = f"http://127.0.0.1:80/login?code={code}"
+    magic_link = f"{os.getenv('HOST', 'http://localhost:80')}/activate?code={code}"
 
     await ModelUser.set_magic_link(email, code, code_expire_time)
     logger.info(f"function: send_login_link, magic link for {email} is set")
@@ -166,9 +167,3 @@ async def logout(auth_token: str = Depends(oauth2_scheme)):
     await ModelUser.delete_cookie(auth_token)
     response = Response(status_code=status.HTTP_204_NO_CONTENT)
     return response
-
-
-# @router.delete("/user", status_code = status.HTTP_204_NO_CONTENT)
-# async def delete_user(user: User):
-#     await ModelUser.delete(**user.dict())
-#     return Response(status_code=status.HTTP_204_NO_CONTENT)

@@ -62,6 +62,11 @@ export interface Booking {
   booked_until: string;
 }
 
+export interface Statistics {
+  hourly_rate: number;
+  booking: Booking;
+}
+
 export interface MapDefinition<ObjectType> {
   width: number;
   height: number;

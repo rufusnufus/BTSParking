@@ -105,86 +105,17 @@ async def get_spaces(zone_id: int, auth_token: str = Depends(oauth2_scheme)):
     width, height = await Zone.get_width_height(id=zone_id)
 
     logger.info("function: get_spaces, getting all booked spaces")
-    spaces = await Space.get_booked_spaces(zone_id)
-    json_spaces = []
-    for space in spaces:
-        json_space = jsonable_encoder(space)
-
-        json_space["free"] = False
-        json_space["type"] = "space"
-
-        json_space.pop("zone_id", None)
-        car_id = json_space.pop("car_id", None)
-        if car_id:
-            occupying_car = await ModelCar.get(car_id)
-
-        start_x = json_space.pop("start_x", None)
-        start_y = json_space.pop("start_y", None)
-        json_space["start"] = {"x": start_x, "y": start_y}
-
-        end_x = json_space.pop("end_x", None)
-        end_y = json_space.pop("end_y", None)
-        json_space["end"] = {"x": end_x, "y": end_y}
-
-        booked_from = json_space.pop("booked_from", None)
-        booked_until = json_space.pop("booked_until", None)
-        json_space["booking"] = {
-            "occupying_car": occupying_car,
-            "space_id": json_space["id"],
-            "booked_from": booked_from,
-            "booked_until": booked_until,
-        }
-        json_spaces.append(json_space)
+    spaces = await get_booked_spaces(zone_id)
 
     logger.info("function: get_spaces, getting all free spaces")
-    free_spaces = await Space.get_free_spaces(zone_id)
-    json_free_spaces = []
-    for free_space in free_spaces:
-        json_free_space = jsonable_encoder(free_space)
-
-        json_free_space["free"] = True
-        json_free_space["type"] = "space"
-
-        json_free_space.pop("zone_id", None)
-        json_free_space.pop("car_id", None)
-
-        start_x = json_free_space.pop("start_x", None)
-        start_y = json_free_space.pop("start_y", None)
-        json_free_space["start"] = {"x": start_x, "y": start_y}
-
-        end_x = json_free_space.pop("end_x", None)
-        end_y = json_free_space.pop("end_y", None)
-        json_free_space["end"] = {"x": end_x, "y": end_y}
-
-        json_free_space.pop("booked_from", None)
-        json_free_space.pop("booked_until", None)
-
-        json_free_spaces.append(json_free_space)
+    free_spaces = await get_free_spaces(zone_id)
 
     logger.info(f"function: get_spaces, getting all roads in zone: {zone_id}")
-    roads = await Road.get_roads(zone_id)
-    json_roads = []
-    for road in roads:
-        json_road = jsonable_encoder(road)
-
-        json_road["type"] = "road"
-
-        json_road.pop("zone_id", None)
-        json_road.pop("id", None)
-
-        start_x = json_road.pop("start_x", None)
-        start_y = json_road.pop("start_y", None)
-        json_road["start"] = {"x": start_x, "y": start_y}
-
-        end_x = json_road.pop("end_x", None)
-        end_y = json_road.pop("end_y", None)
-        json_road["end"] = {"x": end_x, "y": end_y}
-
-        json_roads.append(json_road)
+    roads = await get_roads(zone_id)
     return {
         "width": width,
         "height": height,
-        "objects": json_spaces + json_free_spaces + json_roads,
+        "objects": spaces + free_spaces + roads,
     }
 
 
@@ -252,7 +183,196 @@ async def get_own_spaces(zone_id: int, auth_token: str = Depends(oauth2_scheme))
 
     width, height = await Zone.get_width_height(id=zone_id)
 
-    cars = await ModelCar.get_all(valid_email)
+    own_booked_spaces = await get_own_booked_spaces(valid_email, zone_id)
+    
+    logger.info("function: get_own_spaces, getting all other booked spaces")
+    spaces = await get_booked_spaces(zone_id)
+    ids = [element['id'] for element in own_booked_spaces]
+    for space in range(0, len(spaces)):
+        if spaces[space]['id'] in ids:
+            spaces.pop(space)
+        else:
+            spaces[space].pop('booking', None)
+    
+    logger.info("function: get_own_spaces, getting all free spaces")
+    free_spaces = await get_free_spaces(zone_id)
+
+    logger.info(f"function: get_own_spaces, getting all roads in zone: {zone_id}")
+    roads = await get_roads(zone_id)
+
+    return {"width": width, "height": height, "objects": own_booked_spaces + spaces + free_spaces + roads}
+
+
+@router.post(
+    "/{zone_id}/book",
+    summary="Book a parking space",
+    responses={
+        status.HTTP_204_NO_CONTENT: {
+            "description": "Space booked successfully.",
+        },
+        status.HTTP_306_RESERVED: {
+            "description": "This space is occupied.",
+        },
+        status.HTTP_400_BAD_REQUEST: {
+            "description": "Bad request body.",
+        },
+    },
+)
+async def book_space(
+    zone_id: int,
+    space: Booking = Body(
+        ...,
+        examples={
+            "booking_example": {
+                "summary": "booking_example",
+                "value": {
+                    "occupying_car": {
+                        "id": 1,
+                        "model": "Volkswagen Touareg",
+                        "license_number": "A000AA",
+                    },
+                    "space_id": 3,
+                    "booked_until": "2021-11-01T20:00Z",
+                },
+            }
+        },
+    ),
+    auth_token: str = Depends(oauth2_scheme),
+):
+    logger.info(f"function: book_space, params: zone_id={zone_id}, space={space}")
+    if cookie_is_none(auth_token):
+        logger.info("function: book_space, got cookie is None")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+
+    valid_email = await ModelUser.check_cookie(auth_token)
+    logger.info(f"function: book_space, email: {valid_email}")
+    if not valid_email:
+        # user is not authorized
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED)
+
+    logger.info(f"function: book_space, checking if zone: {zone_id} exists")
+    zone = await Zone.get_zone(zone_id)
+    if not zone:
+        return Response(status_code=status.HTTP_404_NOT_FOUND)
+
+    free_space = await Space.check_free_space(space.space_id, zone_id)
+    if not free_space:
+        return Response(status_code=status.HTTP_306_RESERVED)
+
+    booked_from = datetime.datetime.now()
+    try:
+        booked_until = datetime.datetime.strptime(space.booked_until, "%Y-%m-%dT%H:%MZ")
+    except:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST)
+    
+    logger.info(f"function: book_space, booked_until={type(booked_from)}")
+    user_booking = await ModelBooking.add_booking(
+        booked_from=booked_from,
+        booked_until=booked_until,
+        space_id=space.space_id,
+        car_id=space.occupying_car.id,
+        email=valid_email,
+    )
+    if not user_booking:
+        return Response(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    booked_space = await Space.book_space(
+        car_id=space.occupying_car.id,
+        space_id=space.space_id,
+        zone_id=zone_id,
+        booked_from=booked_from,
+        booked_until=booked_until,
+    )
+
+    if booked_space:
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
+    else:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+async def get_booked_spaces(zone_id):
+    spaces = await Space.get_booked_spaces(zone_id)
+    json_spaces = []
+    for space in spaces:
+        json_space = jsonable_encoder(space)
+
+        json_space["free"] = False
+        json_space["type"] = "space"
+
+        json_space.pop("zone_id", None)
+        car_id = json_space.pop("car_id", None)
+        if car_id:
+            occupying_car = await ModelCar.get(car_id)
+
+        start_x = json_space.pop("start_x", None)
+        start_y = json_space.pop("start_y", None)
+        json_space["start"] = {"x": start_x, "y": start_y}
+
+        end_x = json_space.pop("end_x", None)
+        end_y = json_space.pop("end_y", None)
+        json_space["end"] = {"x": end_x, "y": end_y}
+
+        booked_from = json_space.pop("booked_from", None)
+        booked_until = json_space.pop("booked_until", None)
+        json_space["booking"] = {
+            "occupying_car": occupying_car,
+            "space_id": json_space["id"],
+            "booked_from": booked_from,
+            "booked_until": booked_until,
+        }
+        json_spaces.append(json_space)
+    return json_spaces
+
+async def get_free_spaces(zone_id):
+    free_spaces = await Space.get_free_spaces(zone_id)
+    json_free_spaces = []
+    for free_space in free_spaces:
+        json_free_space = jsonable_encoder(free_space)
+
+        json_free_space["free"] = True
+        json_free_space["type"] = "space"
+
+        json_free_space.pop("zone_id", None)
+        json_free_space.pop("car_id", None)
+
+        start_x = json_free_space.pop("start_x", None)
+        start_y = json_free_space.pop("start_y", None)
+        json_free_space["start"] = {"x": start_x, "y": start_y}
+
+        end_x = json_free_space.pop("end_x", None)
+        end_y = json_free_space.pop("end_y", None)
+        json_free_space["end"] = {"x": end_x, "y": end_y}
+
+        json_free_space.pop("booked_from", None)
+        json_free_space.pop("booked_until", None)
+
+        json_free_spaces.append(json_free_space)
+    return json_free_spaces
+
+async def get_roads(zone_id):
+    roads = await Road.get_roads(zone_id)
+    json_roads = []
+    for road in roads:
+        json_road = jsonable_encoder(road)
+
+        json_road["type"] = "road"
+
+        json_road.pop("zone_id", None)
+        json_road.pop("id", None)
+
+        start_x = json_road.pop("start_x", None)
+        start_y = json_road.pop("start_y", None)
+        json_road["start"] = {"x": start_x, "y": start_y}
+
+        end_x = json_road.pop("end_x", None)
+        end_y = json_road.pop("end_y", None)
+        json_road["end"] = {"x": end_x, "y": end_y}
+
+        json_roads.append(json_road)
+    return json_roads
+
+async def get_own_booked_spaces(email, zone_id):
+    cars = await ModelCar.get_all(email)
     own_booked_spaces = []
     for car in cars:
         curr_car = jsonable_encoder(car)
@@ -286,86 +406,4 @@ async def get_own_spaces(zone_id: int, auth_token: str = Depends(oauth2_scheme))
                 "booked_until": booked_until,
             }
             own_booked_spaces.append(json_booked_space)
-    return {"width": width, "height": height, "objects": own_booked_spaces}
-
-
-@router.post(
-    "/{zone_id}/book",
-    summary="Book a parking space",
-    responses={
-        status.HTTP_204_NO_CONTENT: {
-            "description": "Space booked successfully",
-        },
-        status.HTTP_306_RESERVED: {
-            "description": "This space is occupied.",
-        },
-    },
-)
-async def book_space(
-    zone_id: int,
-    space: Booking = Body(
-        ...,
-        examples={
-            "booking_example": {
-                "summary": "booking_example",
-                "value": {
-                    "occupying_car": {
-                        "id": 1,
-                        "model": "Volkswagen Touareg",
-                        "license_number": "A000AA",
-                    },
-                    "space_id": 3,
-                    "booked_from": "2021-11-01T18:00Z",
-                    "booked_until": "2021-11-01T20:00Z",
-                },
-            }
-        },
-    ),
-    auth_token: str = Depends(oauth2_scheme),
-):
-    logger.info(f"function: book_space, params: zone_id={zone_id}, space={space}")
-    if cookie_is_none(auth_token):
-        logger.info("function: book_space, got cookie is None")
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
-
-    valid_email = await ModelUser.check_cookie(auth_token)
-    logger.info(f"function: book_space, email: {valid_email}")
-    if not valid_email:
-        # user is not authorized
-        raise HTTPException(status.HTTP_401_UNAUTHORIZED)
-
-    logger.info(f"function: book_space, checking if zone: {zone_id} exists")
-    zone = await Zone.get_zone(zone_id)
-    if not zone:
-        return Response(status_code=status.HTTP_404_NOT_FOUND)
-
-    free_space = await Space.check_free_space(space.space_id, zone_id)
-    if not free_space:
-        return Response(status_code=status.HTTP_306_RESERVED)
-
-    booked_from = datetime.datetime.now()
-    booked_until = datetime.datetime.strptime(space.booked_until, "%Y-%m-%dT%H:%MZ")
-    logger.info(f"function: book_space, booked_until={type(booked_from)}")
-
-    user_booking = await ModelBooking.add_booking(
-        booked_from=booked_from,
-        booked_until=booked_until,
-        space_id=space.space_id,
-        car_id=space.occupying_car.id,
-        email=valid_email,
-    )
-    if not user_booking:
-        return Response(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-    booked_space = await Space.book_space(
-        car_id=space.occupying_car.id,
-        space_id=space.space_id,
-        zone_id=zone_id,
-        booked_from=booked_from,
-        booked_until=booked_until,
-    )
-
-    if booked_space:
-        return Response(status_code=status.HTTP_204_NO_CONTENT)
-    else:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    return own_booked_spaces

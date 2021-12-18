@@ -1,6 +1,6 @@
 <script lang="ts" context="module">
   import { requireAuthorization } from '$lib/processes/auth';
-  import { mockFetchZoneMap as fetchZoneMap } from '$lib/pages/zone';
+  import { fetchZoneMap } from '$lib/pages/zone';
   import { fetchCars } from '$lib/pages/cars';
   import { composeLoaders } from '$lib/shared/compose-loaders';
 
