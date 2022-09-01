@@ -15,8 +15,6 @@
 [![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=rufusnufus_BTSParking&metric=code_smells)](https://sonarcloud.io/dashboard?id=rufusnufus_BTSParking)
 <br>
 
-# BTS.Parking
-
 ## Overview
 A web application with ability to reserve parking spaces and get parking usage statistics.
 
